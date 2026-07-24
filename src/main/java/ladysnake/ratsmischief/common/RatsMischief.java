@@ -96,13 +96,9 @@ public class RatsMischief implements ModInitializer, EntityComponentInitializer,
 		ServerWorldLoadEvents.LOAD.register((server, world) -> {
 			initDefaultRat(ModEntities.RAT.create(world));
 		});
-
-		ClientWorldTickEvents.START.register((client, world) -> {
-			initDefaultRat(ModEntities.RAT.create(world));
-		});
 	}
 
-	private static void initDefaultRat(RatEntity RAT) {
+	public static void initDefaultRat(RatEntity RAT) {
 		if (DEFAULT_RAT == null) {
 			DEFAULT_RAT = RAT;
 			DEFAULT_RAT.setRatType(RatEntity.Type.WILD);

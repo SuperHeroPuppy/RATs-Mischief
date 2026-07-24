@@ -27,6 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientWorldTickEvents;
 import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 import xyz.amymialee.mialeemisc.MialeeMiscClient;
 
@@ -73,5 +74,9 @@ public class RatsMischiefClient implements ClientModInitializer {
 			ModItems.RAT_MASTER_HOOD, ModItems.RAT_MASTER_CLOAK, ModItems.RAT_MASTER_BREECHES, ModItems.RAT_MASTER_GREAVES,
 			ModItems.RAT_BELLICIST_HOOD, ModItems.RAT_BELLICIST_CLOAK, ModItems.RAT_BELLICIST_BREECHES, ModItems.RAT_BELLICIST_GREAVES
 		);
+
+		ClientWorldTickEvents.START.register((client, world) -> {
+			RatsMischief.initDefaultRat(ModEntities.RAT.create(world));
+		});
 	}
 }

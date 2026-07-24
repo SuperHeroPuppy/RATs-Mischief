@@ -12,6 +12,7 @@ import ladysnake.ratsmischief.common.entity.RatEntity;
 import ladysnake.ratsmischief.common.init.*;
 import ladysnake.ratsmischief.common.world.RatSpawner;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootPool;
@@ -26,6 +27,7 @@ import net.minecraft.world.Difficulty;
 import org.jetbrains.annotations.NotNull;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientWorldTickEvents;
 import org.quiltmc.qsl.lifecycle.api.event.ServerWorldLoadEvents;
 import org.quiltmc.qsl.lifecycle.api.event.ServerWorldTickEvents;
 import software.bernie.geckolib3.GeckoLib;
@@ -92,9 +94,19 @@ public class RatsMischief implements ModInitializer, EntityComponentInitializer,
 
 		// init default rat
 		ServerWorldLoadEvents.LOAD.register((server, world) -> {
-			DEFAULT_RAT = ModEntities.RAT.create(world);
-			DEFAULT_RAT.setRatType(RatEntity.Type.WILD);
+			initDefaultRat(ModEntities.RAT.create(world));
 		});
+
+		ClientWorldTickEvents.START.register((client, world) -> {
+			initDefaultRat(ModEntities.RAT.create(world));
+		});
+	}
+
+	private static void initDefaultRat(RatEntity RAT) {
+		if (DEFAULT_RAT == null) {
+			DEFAULT_RAT = RAT;
+			DEFAULT_RAT.setRatType(RatEntity.Type.WILD);
+		}
 	}
 
 	@Override

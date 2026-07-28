@@ -954,7 +954,7 @@ public class RatEntity extends TameableEntity implements IAnimatable, Angerable 
 			}
 			amount *= RatArmorItem.getResistanceMultiplier(this.getOwner());
 
-			if (amount > 2f && this.world instanceof ServerWorld serverWorld && ownerUuid != null) {
+			if (amount > 1f && this.world instanceof ServerWorld serverWorld && ownerUuid != null) {
 				long time = serverWorld.getTime();
 				if (RatsMischief.RAT_LAST_DAMAGE_TICK_TRACKER.containsKey(ownerUuid)) {
 					Long lastDamageTick = RatsMischief.RAT_LAST_DAMAGE_TICK_TRACKER.get(ownerUuid);
@@ -1106,8 +1106,10 @@ public class RatEntity extends TameableEntity implements IAnimatable, Angerable 
 	}
 
 	public NbtCompound getRatNbt(boolean ko) {
+		this.clearStatusEffects();
 		NbtCompound nbtCompound = new NbtCompound();
 		if (ko) {
+			this.dead = false;
 			this.setHealth(this.getMaxHealth());
 			nbtCompound.putBoolean("KO", true);
 		}

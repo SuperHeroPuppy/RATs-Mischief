@@ -103,7 +103,6 @@ public class RatsMischief implements ModInitializer, EntityComponentInitializer,
 	}
 
 	public static void initDefaultRat(World world) {
-		System.out.println("INIT DEFAULT RAT");
 		if (DEFAULT_RAT == null) {
 			DEFAULT_RAT = ModEntities.RAT.create(world);
 			DEFAULT_RAT.setRatType(RatEntity.Type.WILD);

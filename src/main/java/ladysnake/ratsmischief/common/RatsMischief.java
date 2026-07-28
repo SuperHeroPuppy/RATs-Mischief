@@ -24,6 +24,7 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
@@ -31,6 +32,9 @@ import org.quiltmc.qsl.lifecycle.api.client.event.ClientWorldTickEvents;
 import org.quiltmc.qsl.lifecycle.api.event.ServerWorldLoadEvents;
 import org.quiltmc.qsl.lifecycle.api.event.ServerWorldTickEvents;
 import software.bernie.geckolib3.GeckoLib;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 public class RatsMischief implements ModInitializer, EntityComponentInitializer, ScoreboardComponentInitializer {
 	public static final String MOD_ID = "ratsmischief";
@@ -40,6 +44,8 @@ public class RatsMischief implements ModInitializer, EntityComponentInitializer,
 	public static final Identifier ANCIENT_CITY_CHESTS = new Identifier("minecraft", "chests/ancient_city");
 
 	public static RatEntity DEFAULT_RAT;
+
+	public static final HashMap<UUID, Long> RAT_LAST_DAMAGE_TICK_TRACKER = new HashMap<>();
 
 	public static Identifier id(String path) {
 		return new Identifier(MOD_ID, path);
@@ -93,14 +99,13 @@ public class RatsMischief implements ModInitializer, EntityComponentInitializer,
 		});
 
 		// init default rat
-		ServerWorldLoadEvents.LOAD.register((server, world) -> {
-			initDefaultRat(ModEntities.RAT.create(world));
-		});
+		ServerWorldLoadEvents.LOAD.register((server, world) -> initDefaultRat(world));
 	}
 
-	public static void initDefaultRat(RatEntity RAT) {
+	public static void initDefaultRat(World world) {
+		System.out.println("INIT DEFAULT RAT");
 		if (DEFAULT_RAT == null) {
-			DEFAULT_RAT = RAT;
+			DEFAULT_RAT = ModEntities.RAT.create(world);
 			DEFAULT_RAT.setRatType(RatEntity.Type.WILD);
 		}
 	}

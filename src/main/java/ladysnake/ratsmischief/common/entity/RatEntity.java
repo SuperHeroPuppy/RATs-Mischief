@@ -49,7 +49,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -943,12 +945,30 @@ public class RatEntity extends TameableEntity implements IAnimatable, Angerable 
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
+			UUID ownerUuid = this.getOwnerUuid();
+
 			Entity entity = source.getAttacker();
 			this.setSitting(false);
 			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
 				amount = (amount + 1.0F) / 2.0F;
 			}
 			amount *= RatArmorItem.getResistanceMultiplier(this.getOwner());
+
+			if (amount > 2f && this.world instanceof ServerWorld serverWorld && ownerUuid != null) {
+				long time = serverWorld.getTime();
+				if (RatsMischief.RAT_LAST_DAMAGE_TICK_TRACKER.containsKey(ownerUuid)) {
+					Long lastDamageTick = RatsMischief.RAT_LAST_DAMAGE_TICK_TRACKER.get(ownerUuid);
+					if (lastDamageTick == time) {
+						serverWorld.playSoundFromEntity(null, this, SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.NEUTRAL, 0.1f, 2f);
+						return false;
+					} else {
+						RatsMischief.RAT_LAST_DAMAGE_TICK_TRACKER.put(ownerUuid, time);
+					}
+				} else {
+					RatsMischief.RAT_LAST_DAMAGE_TICK_TRACKER.put(ownerUuid, time);
+				}
+			}
+
 			return super.damage(source, amount);
 		}
 	}

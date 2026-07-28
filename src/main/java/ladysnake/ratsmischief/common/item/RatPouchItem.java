@@ -50,12 +50,14 @@ public class RatPouchItem extends Item {
 			ItemStack emptyStack = new ItemStack(this);
 			stacks.add(emptyStack);
 
-			ItemStack filledStack = emptyStack.copy();
-			NbtCompound ratNbt = RatsMischief.DEFAULT_RAT.getRatNbt(false);
-			for (int i = 0; i < this.size; i++) {
-				RatPouchItem.storeRat(ratNbt, filledStack, false);
+			if (RatsMischief.DEFAULT_RAT != null) {
+				ItemStack filledStack = emptyStack.copy();
+				NbtCompound ratNbt = RatsMischief.DEFAULT_RAT.getRatNbt(false);
+				for (int i = 0; i < this.size; i++) {
+					RatPouchItem.storeRat(ratNbt, filledStack, false);
+				}
+				stacks.add(filledStack);
 			}
-			stacks.add(filledStack);
 		}
 	}
 

@@ -75,8 +75,6 @@ public class RatsMischiefClient implements ClientModInitializer {
 			ModItems.RAT_BELLICIST_HOOD, ModItems.RAT_BELLICIST_CLOAK, ModItems.RAT_BELLICIST_BREECHES, ModItems.RAT_BELLICIST_GREAVES
 		);
 
-		ClientWorldTickEvents.START.register((client, world) -> {
-			RatsMischief.initDefaultRat(ModEntities.RAT.create(world));
-		});
+		ClientWorldTickEvents.START.register((client, world) -> RatsMischief.initDefaultRat(world));
 	}
 }

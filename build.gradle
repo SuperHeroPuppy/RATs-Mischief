@@ -1,6 +1,6 @@
 plugins {
-	id 'maven-publish'
-	id 'io.github.ladysnake.chenille' version '0.11.3'
+    id 'maven-publish'
+    id 'org.quiltmc.loom' version '1.2.3'
 }
 
 archivesBaseName = project.archives_base_name
@@ -19,7 +19,10 @@ repositories {
 	maven { url "https://maven.shedaniel.me/" }
 
 	// CCA, Requiem
-	chenille.repositories.ladysnake()
+	maven {
+		name = "Ladysnake Mods"
+		url = "https://maven.ladysnake.org/releases"
+	}
 
 	// mod menu
 	maven {
@@ -96,17 +99,6 @@ dependencies {
 	modImplementation ("dev.emi:trinkets:${project.trinkets_version}")
 }
 
-chenille {
-	javaVersion = 17
-	configurePublishing {
-		mainArtifact = remapJar.archiveFile
-		withLadysnakeMaven()
-		withCurseforgeRelease()
-		withGithubRelease()
-		withModrinthRelease()
-	}
-}
-
 processResources {
 	inputs.property 'version', version
 
@@ -116,7 +108,11 @@ processResources {
 }
 
 java {
-	withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+
+    withSourcesJar()
 }
 
 // If you plan to use a different file for the license, don't forget to change the file name here!

@@ -78,7 +78,7 @@ dependencies {
 	include("com.github.emilyploszaj:step-height-entity-attribute:v1.0.1")
 
 	// mod menu
-	modLocalImplementation("com.terraformersmc:modmenu:${mod_menu_version}") { transitive = false }
+	modImplementation("com.terraformersmc:modmenu:${mod_menu_version}") { transitive = false }
 
 	// mixin extras
 	implementation include("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")

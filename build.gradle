@@ -9,6 +9,11 @@ group = project.maven_group
 
 repositories {
 	mavenLocal()
+
+	maven {
+		name = "Stellardrift Snapshots"
+		url = "https://repo.stellardrift.ca/maven/snapshots/"
+	}
 	// publishing
 	maven {
 		name = "CurseForge"

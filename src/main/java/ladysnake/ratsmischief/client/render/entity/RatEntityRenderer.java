@@ -25,6 +25,7 @@ public class RatEntityRenderer extends GeoEntityRenderer<RatEntity> {
 	private ItemStack itemStack;
 	private VertexConsumerProvider vertexConsumerProvider;
 	private Identifier ratTexture;
+	private RatEntity currentRat;
 
 	public RatEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new RatEntityModel());
@@ -53,6 +54,7 @@ public class RatEntityRenderer extends GeoEntityRenderer<RatEntity> {
 
 	@Override
 	public void renderEarly(RatEntity ratEntity, MatrixStack stackIn, float ticks, VertexConsumerProvider vertexConsumerProvider, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float partialTicks) {
+		this.currentRat = ratEntity;
 		this.itemStack = ratEntity.isSitting() || ratEntity.isSneaking() ? ItemStack.EMPTY : ratEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		this.vertexConsumerProvider = vertexConsumerProvider;
 		this.ratTexture = this.getTexture(ratEntity);
@@ -70,7 +72,21 @@ public class RatEntityRenderer extends GeoEntityRenderer<RatEntity> {
 			stack.scale(0.7f, 0.7f, 0.7f);
 			stack.multiply(new Quaternion(bone.getRotationX(), bone.getRotationZ(), bone.getRotationY(), false));
 
-			MinecraftClient.getInstance().getItemRenderer().renderItem(this.itemStack, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, packedLightIn, packedOverlayIn, stack, this.vertexConsumerProvider, 0);
+			if (this.currentRat != null && this.itemStack != null && !this.itemStack.isEmpty()) {
+				MinecraftClient.getInstance().getItemRenderer().renderItem(
+					this.currentRat,
+					this.itemStack,
+					ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND,
+					false,
+					stack,
+					this.vertexConsumerProvider,
+					this.currentRat.getWorld(),
+					packedLightIn,
+					packedOverlayIn,
+					0
+				);
+			}
+
 			stack.pop();
 
 			// restore the render buffer - GeckoLib expects this state otherwise you'll have weird texture issues

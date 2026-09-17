@@ -1033,7 +1033,18 @@ public class RatEntity extends TameableEntity implements IAnimatable, Angerable 
 		REMY(new Identifier(RatsMischief.MOD_ID, "textures/entity/named/remy.png")),
 		RATATER(new Identifier(RatsMischief.MOD_ID, "textures/entity/named/ratater.png")),
 		JERMA(new Identifier(RatsMischief.MOD_ID, "textures/entity/named/jerma.png")),
-		BIGGIE_CHEESE(new Identifier(RatsMischief.MOD_ID, "textures/entity/named/biggie_cheese.png"));
+		BIGGIE_CHEESE(new Identifier(RatsMischief.MOD_ID, "textures/entity/named/biggie_cheese.png")),
+
+		WILD_GHOST(new Identifier(RatsMischief.MOD_ID, "textures/entity/wild_ghost.png")),
+		HUSKY_GHOST(new Identifier(RatsMischief.MOD_ID, "textures/entity/husky_ghost.png")),
+		AMETHYST(new Identifier(RatsMischief.MOD_ID, "textures/entity/amethyst.png")),
+		COPPER(new Identifier(RatsMischief.MOD_ID, "textures/entity/copper.png")),
+		DIAMOND(new Identifier(RatsMischief.MOD_ID, "textures/entity/diamond.png")),
+		EMERALD(new Identifier(RatsMischief.MOD_ID, "textures/entity/emerald.png")),
+		MOUTHPIECE(new Identifier(RatsMischief.MOD_ID, "textures/entity/mouthpiece.png")),
+		REDSTONE(new Identifier(RatsMischief.MOD_ID, "textures/entity/redstone.png")),
+		SOUL(new Identifier(RatsMischief.MOD_ID, "textures/entity/soul.png")),
+		ANCIENT_CITY(new Identifier(RatsMischief.MOD_ID, "textures/entity/ancient_city.png"));
 
 		public final Identifier ratTexture;
 

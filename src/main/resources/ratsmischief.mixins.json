@@ -19,7 +19,9 @@
     "client.EntityRendererMixin",
     "client.HeadFeatureRendererMixin",
     "client.HeldItemRendererMixin",
+    "client.InGameHudMixin",
     "client.ItemEntityRendererMixin",
+    "client.KeyboardInputMixin",
     "client.PlayerEntityRendererMixin"
   ],
   "injectors": {

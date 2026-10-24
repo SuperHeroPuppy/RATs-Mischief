@@ -2,6 +2,7 @@ package ladysnake.ratsmischief.client;
 
 import ladysnake.ratsmischief.client.render.entity.RatEntityRenderer;
 import ladysnake.ratsmischief.client.render.armor.RatArmorRenderer;
+import ladysnake.ratsmischief.client.model.RatMasterPlayerEntityModel;
 import ladysnake.ratsmischief.client.render.item.RatMasterMaskItemRenderer;
 import ladysnake.ratsmischief.common.RatsMischief;
 import ladysnake.ratsmischief.common.init.ModEntities;
@@ -19,7 +20,6 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceType;
@@ -38,9 +38,9 @@ public class RatsMischiefClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		RatPossessionClient.initialize();
-		EntityModelLayerRegistry.registerModelLayer(RAT_MASTER_ARMOR_INNER_LAYER, () -> TexturedModelData.of(PlayerEntityModel.getTexturedModelData(new Dilation(0.28f), false), 64, 64));
-		EntityModelLayerRegistry.registerModelLayer(RAT_MASTER_ARMOR_OUTER_LAYER, () -> TexturedModelData.of(PlayerEntityModel.getTexturedModelData(new Dilation(0.29f), false), 64, 64));
-		EntityModelLayerRegistry.registerModelLayer(RAT_MASTER_ARMOR_OUTER_LAYER_SLIM, () -> TexturedModelData.of(PlayerEntityModel.getTexturedModelData(new Dilation(0.29f), true), 64, 64));
+		EntityModelLayerRegistry.registerModelLayer(RAT_MASTER_ARMOR_INNER_LAYER, () -> TexturedModelData.of(RatMasterPlayerEntityModel.getTexturedModelData(new Dilation(0.28f), false), 64, 64));
+		EntityModelLayerRegistry.registerModelLayer(RAT_MASTER_ARMOR_OUTER_LAYER, () -> TexturedModelData.of(RatMasterPlayerEntityModel.getTexturedModelData(new Dilation(0.29f), false), 64, 64));
+		EntityModelLayerRegistry.registerModelLayer(RAT_MASTER_ARMOR_OUTER_LAYER_SLIM, () -> TexturedModelData.of(RatMasterPlayerEntityModel.getTexturedModelData(new Dilation(0.29f), true), 64, 64));
 
 		ModParticles.registerFactories();
 		ModParticles.init();

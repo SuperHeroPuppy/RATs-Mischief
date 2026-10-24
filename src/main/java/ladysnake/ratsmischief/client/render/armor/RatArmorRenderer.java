@@ -83,6 +83,6 @@ public final class RatArmorRenderer implements ArmorRenderer {
 			this.outer = new PlayerEntityModel<>(loader.getModelPart(RatsMischiefClient.RAT_MASTER_ARMOR_OUTER_LAYER), false);
 			this.slimOuter = new PlayerEntityModel<>(loader.getModelPart(RatsMischiefClient.RAT_MASTER_ARMOR_OUTER_LAYER_SLIM), true);
 		}
-		return slot == EquipmentSlot.LEGS ? this.inner : slim ? this.slimOuter : this.outer;
+		return slot == EquipmentSlot.HEAD || slot == EquipmentSlot.LEGS ? this.inner : slim ? this.slimOuter : this.outer;
 	}
 }

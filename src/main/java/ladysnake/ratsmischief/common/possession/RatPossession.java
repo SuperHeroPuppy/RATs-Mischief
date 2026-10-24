@@ -7,14 +7,15 @@ import ladysnake.ratsmischief.common.init.ModStatusEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,8 @@ import java.util.UUID;
 /** The Fabric replacement for the rat-specific possession provided by Requiem. */
 public final class RatPossession {
 	public static final Identifier CONTROL_PACKET = RatsMischief.id("rat_control");
+	public static final Identifier CAMERA_PACKET = RatsMischief.id("rat_camera");
+	private static final String RECOVERY_TAG_PREFIX = "ratsmischief_rat_control_";
 	private static final Map<UUID, Session> SESSIONS = new HashMap<>();
 
 	private RatPossession() {}
@@ -46,6 +49,7 @@ public final class RatPossession {
 			if (session != null) end(player, session, false);
 		});
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> server.execute(() -> {
+			recoverPlayerState(handler.player);
 			if (handler.player.hasStatusEffect(ModStatusEffects.RAT_CURSE)) {
 				beginCurse(handler.player);
 			}
@@ -81,12 +85,20 @@ public final class RatPossession {
 	}
 
 	private static void start(ServerPlayerEntity player, RatEntity rat, boolean cursed) {
-		Session session = new Session(rat, player.interactionManager.getGameMode(), player.getPos(), cursed, rat.isAiDisabled());
+		int previousFlags = (player.isInvisible() ? 1 : 0) | (player.isInvulnerable() ? 2 : 0)
+			| (player.hasNoGravity() ? 4 : 0) | (player.noClip ? 8 : 0);
+		Session session = new Session(rat, player.getPos(), cursed, rat.isAiDisabled(), previousFlags);
 		SESSIONS.put(player.getUuid(), session);
 		rat.setAiDisabled(true);
-		player.changeGameMode(GameMode.SPECTATOR);
+		player.addCommandTag(RECOVERY_TAG_PREFIX + previousFlags);
+		player.setInvisible(true);
+		player.setInvulnerable(true);
+		player.setNoGravity(true);
+		player.noClip = true;
+		player.setVelocity(Vec3d.ZERO);
 		player.teleport((ServerWorld) rat.getWorld(), rat.getX(), rat.getY(), rat.getZ(), rat.getYaw(), rat.getPitch());
 		player.setCameraEntity(rat);
+		sendCamera(player, rat.getId());
 	}
 
 	private static void control(ServerPlayerEntity player, float yaw, float pitch, int forward, int sideways,
@@ -107,12 +119,14 @@ public final class RatPossession {
 			return;
 		}
 		rat.setYaw(yaw);
+		rat.setBodyYaw(yaw);
+		rat.setHeadYaw(yaw);
 		rat.setPitch(pitch);
 		float radians = yaw * MathHelper.RADIANS_PER_DEGREE;
 		forward = MathHelper.clamp(forward, -1, 1);
 		sideways = MathHelper.clamp(sideways, -1, 1);
-		float x = -MathHelper.sin(radians) * forward + MathHelper.cos(radians) * sideways;
-		float z = MathHelper.cos(radians) * forward + MathHelper.sin(radians) * sideways;
+		float x = -MathHelper.sin(radians) * forward - MathHelper.cos(radians) * sideways;
+		float z = MathHelper.cos(radians) * forward - MathHelper.sin(radians) * sideways;
 		Vec3d direction = new Vec3d(x, 0, z);
 		if (direction.lengthSquared() > 1) {
 			direction = direction.normalize();
@@ -149,8 +163,15 @@ public final class RatPossession {
 				continue;
 			}
 			if (session.attackCooldown > 0) session.attackCooldown--;
-			if (player.squaredDistanceTo(session.rat) > 16) {
-				player.teleport((ServerWorld) session.rat.getWorld(), session.rat.getX(), session.rat.getY(), session.rat.getZ(), session.rat.getYaw(), session.rat.getPitch());
+			player.setVelocity(Vec3d.ZERO);
+			player.noClip = true;
+			player.fallDistance = 0;
+			if (player.squaredDistanceTo(session.rat) > 1) {
+				player.teleport((ServerWorld) session.rat.getWorld(), session.rat.getX(), session.rat.getY(), session.rat.getZ(), player.getYaw(), player.getPitch());
+			}
+			if (player.getCameraEntity() != session.rat) {
+				player.setCameraEntity(session.rat);
+				sendCamera(player, session.rat.getId());
 			}
 		}
 	}
@@ -160,27 +181,57 @@ public final class RatPossession {
 		RatEntity rat = session.rat;
 		Vec3d destination = session.cursed ? rat.getPos() : session.origin;
 		player.setCameraEntity(player);
-		player.changeGameMode(session.previousGameMode);
+		sendCamera(player, -1);
+		player.removeScoreboardTag(RECOVERY_TAG_PREFIX + session.previousFlags);
+		restorePlayerFlags(player, session.previousFlags);
+		player.setVelocity(Vec3d.ZERO);
 		player.teleport((ServerWorld) player.getWorld(), destination.x, destination.y, destination.z, player.getYaw(), player.getPitch());
 		rat.setAiDisabled(session.wasAiDisabled);
 		if (session.cursed) rat.discard();
 		if (kill) player.kill();
 	}
 
+	private static void sendCamera(ServerPlayerEntity player, int entityId) {
+		if (!player.networkHandler.isConnectionOpen()) return;
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeVarInt(entityId);
+		ServerPlayNetworking.send(player, CAMERA_PACKET, buf);
+	}
+
+	private static void recoverPlayerState(ServerPlayerEntity player) {
+		for (String tag : new ArrayList<>(player.getCommandTags())) {
+			if (tag.startsWith(RECOVERY_TAG_PREFIX)) {
+				try {
+					restorePlayerFlags(player, Integer.parseInt(tag.substring(RECOVERY_TAG_PREFIX.length())));
+				} catch (NumberFormatException ignored) {
+					restorePlayerFlags(player, 0);
+				}
+				player.removeScoreboardTag(tag);
+			}
+		}
+	}
+
+	private static void restorePlayerFlags(ServerPlayerEntity player, int flags) {
+		player.setInvisible((flags & 1) != 0);
+		player.setInvulnerable((flags & 2) != 0);
+		player.setNoGravity((flags & 4) != 0);
+		player.noClip = (flags & 8) != 0;
+	}
+
 	private static final class Session {
 		final RatEntity rat;
-		final GameMode previousGameMode;
 		final Vec3d origin;
 		final boolean cursed;
 		final boolean wasAiDisabled;
+		final int previousFlags;
 		int attackCooldown;
 
-		Session(RatEntity rat, GameMode previousGameMode, Vec3d origin, boolean cursed, boolean wasAiDisabled) {
+		Session(RatEntity rat, Vec3d origin, boolean cursed, boolean wasAiDisabled, int previousFlags) {
 			this.rat = rat;
-			this.previousGameMode = previousGameMode;
 			this.origin = origin;
 			this.cursed = cursed;
 			this.wasAiDisabled = wasAiDisabled;
+			this.previousFlags = previousFlags;
 		}
 	}
 }

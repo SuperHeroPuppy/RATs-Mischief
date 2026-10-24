@@ -2,7 +2,6 @@ package ladysnake.ratsmischief.common.item;
 
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import ladysnake.ratsmischief.common.possession.RatPossession;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.item.Item;
@@ -12,6 +11,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
+import java.util.Comparator;
+
 public class RatMasterMirrorItem extends Item {
 	public RatMasterMirrorItem(Settings settings) {
 		super(settings);
@@ -20,15 +21,9 @@ public class RatMasterMirrorItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if (!world.isClient()) {
-			RatEntity rat = world.getClosestEntity(
-				RatEntity.class,
-				TargetPredicate.createAttackable().setPredicate(r -> ((RatEntity) r).isOwner(user) && ((RatEntity) r).isSpy()),
-				user,
-				user.getX(),
-				user.getY(),
-				user.getZ(),
-				new Box(user.getBlockPos()).expand(160) // 16 chunks
-			);
+			RatEntity rat = world.getEntitiesByClass(RatEntity.class, new Box(user.getBlockPos()).expand(160),
+				candidate -> candidate.isAlive() && candidate.isSpy() && candidate.isOwner(user))
+				.stream().min(Comparator.comparingDouble(user::squaredDistanceTo)).orElse(null);
 			if (rat != null && user instanceof ServerPlayerEntity player && RatPossession.beginSpy(player, rat)) {
 				player.getItemCooldownManager().set(this, 40);
 			}

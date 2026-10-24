@@ -1,7 +1,7 @@
 package ladysnake.ratsmischief.mixin;
 
 import ladysnake.ratsmischief.common.entity.RatEntity;
-import net.minecraft.entity.mob.warden.WardenEntity;
+import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.GameEvent;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(WardenEntity.class)
 public class WardenEntityMixin {
 	@Inject(method = "accepts", at = @At(value = "HEAD"), cancellable = true)
-	private void mischief$noRats(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Context context, CallbackInfoReturnable<Boolean> cir) {
+	private void mischief$noRats(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter context, CallbackInfoReturnable<Boolean> cir) {
 		if (context.sourceEntity() instanceof RatEntity) {
 			cir.setReturnValue(false);
 		}

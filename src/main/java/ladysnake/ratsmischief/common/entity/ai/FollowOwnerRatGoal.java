@@ -82,7 +82,7 @@ public class FollowOwnerRatGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.rat.getLookControl().lookAt(this.owner, 10.0F, (float) this.rat.getLookPitchSpeed());
+		this.rat.getLookControl().lookAt(this.owner, 10.0F, (float) this.rat.getMaxLookPitchChange());
 		if (--this.updateCountdownTicks <= 0) {
 			this.updateCountdownTicks = 10;
 			if (!this.rat.isLeashed() && !this.rat.hasVehicle()) {

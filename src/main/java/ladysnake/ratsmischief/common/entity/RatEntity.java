@@ -61,7 +61,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.random.RandomGenerator;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -114,12 +114,12 @@ public class RatEntity extends TameableEntity implements IAnimatable, Angerable 
 		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.0D).add(StepHeightEntityAttributeMain.STEP_HEIGHT, 2.0D).add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0D).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5D).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.1).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32);
 	}
 
-	public static Type getRandomNaturalType(RandomGenerator random) {
+	public static Type getRandomNaturalType(Random random) {
 		return NATURAL_TYPES.get(random.nextInt(NATURAL_TYPES.size()));
 	}
 
 	@Override
-	protected void initEquipment(RandomGenerator random, LocalDifficulty localDifficulty) {
+	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		// try spawning with cake on birthday
 		if (RatsMischiefUtils.IS_BIRTHDAY && !this.isBaby() && this.getRandom().nextInt(5) == 0) {
 			this.setStackInHand(Hand.MAIN_HAND, new ItemStack(Items.CAKE));
@@ -199,7 +199,7 @@ public class RatEntity extends TameableEntity implements IAnimatable, Angerable 
 		this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
 		this.targetSelector.add(2, new AttackWithOwnerGoal(this));
 		this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
-		this.targetSelector.add(4, new TargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+		this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector.add(8, new ChaseForFunGoal<>(this, CatEntity.class, true));
 		this.targetSelector.add(8, new UniversalAngerGoal<>(this, true));
 	}
@@ -508,7 +508,7 @@ public class RatEntity extends TameableEntity implements IAnimatable, Angerable 
 	}
 
 	protected boolean canHit(Entity entity) {
-		if (!entity.isSpectator() && entity.isAlive() && entity.collides()) {
+		if (!entity.isSpectator() && entity.isAlive() && entity.isCollidable()) {
 			Entity entity2 = this.getOwner();
 			return entity2 == null || entity != entity2 || !entity2.isConnectedThroughVehicle(entity);
 		} else {

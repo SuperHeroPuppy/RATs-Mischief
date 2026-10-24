@@ -1,7 +1,7 @@
 package ladysnake.ratsmischief.mixin.client;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.render.VertexConsumer;
 import ladysnake.ratsmischief.client.RatsMischiefClient;
 import ladysnake.ratsmischief.common.RatsMischief;
 import ladysnake.ratsmischief.common.item.RatMasterArmorItem;

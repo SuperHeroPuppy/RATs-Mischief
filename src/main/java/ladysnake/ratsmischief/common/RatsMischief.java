@@ -3,7 +3,10 @@ package ladysnake.ratsmischief.common;
 import ladysnake.ratsmischief.client.render.item.recipe.SpyRatCraftingRecipe;
 import ladysnake.ratsmischief.common.init.*;
 import ladysnake.ratsmischief.common.world.RatSpawner;
+import ladysnake.ratsmischief.common.possession.RatPossession;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.item.EnchantedBookItem;
@@ -18,9 +21,6 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
-import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
-import org.quiltmc.qsl.lifecycle.api.event.ServerWorldTickEvents;
 import software.bernie.geckolib3.GeckoLib;
 
 public class RatsMischief implements ModInitializer {
@@ -35,8 +35,9 @@ public class RatsMischief implements ModInitializer {
 	}
 
 	@Override
-	public void onInitialize(ModContainer mod) {
+	public void onInitialize() {
 		GeckoLib.initialize();
+		RatPossession.initialize();
 
 		// initializing stuff
 		ModEntities.initialize();
@@ -50,9 +51,9 @@ public class RatsMischief implements ModInitializer {
 
 		// custom rat spawner in abandoned villages
 		RatSpawner ratSpawner = new RatSpawner();
-		ServerWorldTickEvents.END.register((server, world) -> {
+		ServerTickEvents.END_WORLD_TICK.register(world -> {
 			// spawn rats
-			ratSpawner.spawn(world, world.getDifficulty() != Difficulty.PEACEFUL, server.shouldSpawnAnimals());
+			ratSpawner.spawn(world, world.getDifficulty() != Difficulty.PEACEFUL, world.getServer().shouldSpawnAnimals());
 		});
 
 		// rat kid painting

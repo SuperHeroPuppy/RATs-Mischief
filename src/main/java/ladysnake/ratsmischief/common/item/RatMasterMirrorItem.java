@@ -1,11 +1,10 @@
 package ladysnake.ratsmischief.common.item;
 
 import ladysnake.ratsmischief.common.entity.RatEntity;
-import ladysnake.ratsmischief.common.requiem.RatsMischiefRequiemPlugin;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.ratsmischief.common.possession.RatPossession;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -30,15 +29,8 @@ public class RatMasterMirrorItem extends Item {
 				user.getZ(),
 				new Box(user.getBlockPos()).expand(160) // 16 chunks
 			);
-			if (rat != null) {
-				RemnantComponent remnantComponent = RemnantComponent.get(user);
-				remnantComponent.become(RatsMischiefRequiemPlugin.SPYING_RAT_REMNANT_TYPE);
-				remnantComponent.splitPlayer(false)
-					.ifPresent(res -> {
-						res.soul().getItemCooldownManager().set(this, 40);
-						res.soul().networkHandler.requestTeleport(rat.getX(), rat.getY(), rat.getZ(), rat.getYaw(), rat.getPitch());
-						PossessionComponent.get(res.soul()).startPossessing(rat);
-					});
+			if (rat != null && user instanceof ServerPlayerEntity player && RatPossession.beginSpy(player, rat)) {
+				player.getItemCooldownManager().set(this, 40);
 			}
 		}
 

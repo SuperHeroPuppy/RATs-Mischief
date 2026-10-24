@@ -98,7 +98,7 @@ public class RatMeleeAttackGoal extends Goal {
 	}
 
 	@Override
-	public boolean requiresUpdateEveryTick() {
+	public boolean shouldRunEveryTick() {
 		return true;
 	}
 

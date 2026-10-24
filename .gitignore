@@ -1,10 +1,11 @@
 # Gradle
 .gradle/
 build/
+/compile.log
 out/
 classes/
 
-# Quilt Loom
+# Fabric Loom
 remappedSrc/
 run/
 

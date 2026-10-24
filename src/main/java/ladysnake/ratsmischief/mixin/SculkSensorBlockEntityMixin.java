@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SculkSensorBlockEntity.class)
 public class SculkSensorBlockEntityMixin {
 	@Inject(method = "accepts", at = @At(value = "HEAD"), cancellable = true)
-	private void mischief$noRats(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Context context, CallbackInfoReturnable<Boolean> cir) {
+	private void mischief$noRats(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter context, CallbackInfoReturnable<Boolean> cir) {
 		if (context.sourceEntity() instanceof RatEntity) {
 			cir.setReturnValue(false);
 		}

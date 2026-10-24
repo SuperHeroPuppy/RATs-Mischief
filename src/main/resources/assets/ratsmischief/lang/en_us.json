@@ -72,6 +72,8 @@
   "effect.ratsmischief.rat_curse" : "Curse of the Rat",
   "effect.ratsmischief.rat_curse_cooldown" : "Curse of the Rat (Cooldown)",
 
-  "death.attack.rat" : "%1$s was nibbled to death"
+  "death.attack.rat" : "%1$s was nibbled to death",
+  "key.ratsmischief.return_to_body": "Return to body",
+  "category.ratsmischief": "RAT's Mischief"
 
 }

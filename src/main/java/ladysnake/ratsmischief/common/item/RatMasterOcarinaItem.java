@@ -1,5 +1,6 @@
 package ladysnake.ratsmischief.common.item;
 
+import ladysnake.ratsmischief.common.RatsMischief;
 import ladysnake.ratsmischief.client.RatsMischiefClientHelper;
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import ladysnake.ratsmischief.common.entity.ai.BreedGoal;
@@ -16,28 +17,40 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import xyz.amymialee.mialeemisc.items.IClickConsumingItem;
-import xyz.amymialee.mialeemisc.util.MialeeMath;
+import ladysnake.ratsmischief.common.util.RatMath;
 
 import java.util.List;
 
-public class RatMasterOcarinaItem extends Item implements IClickConsumingItem {
+public class RatMasterOcarinaItem extends Item {
+	public static final Identifier CYCLE_PACKET = RatsMischief.id("cycle_ocarina");
+
+	public static void initializeNetworking() {
+		ServerPlayNetworking.registerGlobalReceiver(CYCLE_PACKET, (server, player, handler, buf, responseSender) ->
+			server.execute(() -> {
+				if (player.getMainHandStack().getItem() instanceof RatMasterOcarinaItem ocarina) {
+					ocarina.cycleAction(player);
+				}
+			}));
+	}
+
 	public RatMasterOcarinaItem(Settings settings) {
 		super(settings);
 	}
 
 	public static Action getAction(ItemStack stack) {
 		NbtCompound compound = stack.getOrCreateNbt();
-		return Action.values()[MialeeMath.clampLoop(compound.getInt("action"), 0, Action.values().length)];
+		return Action.values()[RatMath.clampLoop(compound.getInt("action"), 0, Action.values().length)];
 	}
 
 	@Override
@@ -57,7 +70,7 @@ public class RatMasterOcarinaItem extends Item implements IClickConsumingItem {
 			}
 		});
 		ItemStack stack = user.getStackInHand(hand);
-		world.playSoundFromEntity(null, user, SoundEvents.BLOCK_NOTE_BLOCK_FLUTE, user.getSoundCategory(), 1f, 0.5f + (stack.getOrCreateNbt().getInt("action") / 4f));
+		world.playSoundFromEntity(null, user, SoundEvents.BLOCK_NOTE_BLOCK_FLUTE.value(), user.getSoundCategory(), 1f, 0.5f + (stack.getOrCreateNbt().getInt("action") / 4f));
 		return TypedActionResult.success(user.getStackInHand(hand));
 	}
 
@@ -81,11 +94,10 @@ public class RatMasterOcarinaItem extends Item implements IClickConsumingItem {
 		return false;
 	}
 
-	@Override
-	public void mialeeMisc$doAttack(ServerPlayerEntity serverPlayerEntity) {
+	public void cycleAction(ServerPlayerEntity serverPlayerEntity) {
 		ItemStack stack = serverPlayerEntity.getMainHandStack();
 		NbtCompound compound = stack.getOrCreateNbt();
-		compound.putInt("action", MialeeMath.clampLoop(compound.getInt("action") + (serverPlayerEntity.isSneaking() ? -1 : 1), 0, Action.values().length));
+		compound.putInt("action", RatMath.clampLoop(compound.getInt("action") + (serverPlayerEntity.isSneaking() ? -1 : 1), 0, Action.values().length));
 	}
 
 	@Override

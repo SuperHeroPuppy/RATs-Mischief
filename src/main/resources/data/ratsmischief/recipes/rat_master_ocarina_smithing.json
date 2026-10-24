@@ -1,12 +1,15 @@
 {
-  "type": "minecraft:smithing",
-  "addition": {
-    "item": "ratsmischief:clothed_ingot"
-  },
-  "base": {
-    "item": "minecraft:goat_horn"
-  },
-  "result": {
-    "item": "ratsmischief:rat_master_ocarina"
-  }
+    "type":  "minecraft:smithing_transform",
+    "addition":  {
+                     "item":  "ratsmischief:clothed_ingot"
+                 },
+    "base":  {
+                 "item":  "minecraft:goat_horn"
+             },
+    "result":  {
+                   "item":  "ratsmischief:rat_master_ocarina"
+               },
+    "template":  {
+                     "item":  "ratsmischief:rat_master_smithing_template"
+                 }
 }

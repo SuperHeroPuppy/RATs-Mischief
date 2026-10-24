@@ -13,8 +13,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import xyz.amymialee.mialeemisc.util.MialeeMath;
-import xyz.amymialee.mialeemisc.util.MialeeText;
+import ladysnake.ratsmischief.common.util.RatMath;
+import ladysnake.ratsmischief.common.util.RatText;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,12 +49,12 @@ public class RatMasterMaskItem extends TrinketItem {
 
 	public static void incrementOffset(ItemStack stack) {
 		NbtCompound compound = stack.getOrCreateNbt();
-		compound.putInt("offset", MialeeMath.clampLoop(compound.getInt("offset") + 1, -2, 3));
+		compound.putInt("offset", RatMath.clampLoop(compound.getInt("offset") + 1, -2, 3));
 	}
 
 	@Override
 	public Text getName(ItemStack stack) {
-		return MialeeText.withColor(super.getName(stack), 0x87FFBF);
+		return RatText.withColor(super.getName(stack), 0x87FFBF);
 	}
 
 	@Override

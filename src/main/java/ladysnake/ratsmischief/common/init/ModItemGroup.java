@@ -1,26 +1,23 @@
-package ladysnake.ratsmischief.common.init;//package doctor4t.ratsmischief.common.init;
-//
-//import doctor4t.ratsmischief.common.RatsMischief;
-//import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-//import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-//import net.minecraft.item.Item;
-//import net.minecraft.item.ItemGroup;
-//import net.minecraft.item.ItemStack;
-//import net.minecraft.item.Items;
-//import net.minecraft.text.Text;
-//import net.minecraft.util.Identifier;
-//
-//public class ModItemGroup {
-//	public static ItemGroup MOD_ITEMS;
-//
-//	public static void initialize() {
-//		MOD_ITEMS = FabricItemGroup.builder(new Identifier(RatsMischief.MOD_ID, "items"))
-//				.name(Text.literal("Explosive Ideas"))
-//				.icon(() -> new ItemStack(Items.TNT))
-//				.build();
-//	}
-//
-//	public static void addToItemGroup(ItemGroup group, Item item) {
-//		ItemGroupEvents.modifyEntriesEvent(group).register(entries -> entries.addItem(item));
-//	}
-//}
+package ladysnake.ratsmischief.common.init;
+
+import ladysnake.ratsmischief.common.RatsMischief;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
+
+public final class ModItemGroup {
+	private ModItemGroup() {
+	}
+
+	public static void initialize() {
+		ItemGroup group = FabricItemGroup.builder()
+			.displayName(Text.translatable("itemGroup.ratsmischief"))
+			.icon(() -> new ItemStack(ModItems.RAT))
+			.entries((context, entries) -> ModItems.ITEMS.keySet().forEach(entries::add))
+			.build();
+		Registry.register(Registries.ITEM_GROUP, RatsMischief.id("items"), group);
+	}
+}

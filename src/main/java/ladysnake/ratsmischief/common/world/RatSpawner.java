@@ -2,7 +2,7 @@ package ladysnake.ratsmischief.common.world;
 
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import ladysnake.ratsmischief.common.init.ModEntities;
-import net.minecraft.tag.StructureTags;
+import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;

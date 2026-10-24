@@ -1,5 +1,6 @@
 {
   "entity.ratsmischief.rat": "Rat",
+  "itemGroup.ratsmischief": "RAT's Mischief",
 
   "item.ratsmischief.rat_spawn_egg": "Rat Spawn Egg",
   "item.ratsmischief.rat": "Rat",
@@ -8,6 +9,12 @@
   "item.ratsmischief.purpur_rat_pouch": "Purpur Rat Pouch",
   "item.ratsmischief.rat_master_pouch": "Rat Master Pouch",
   "item.ratsmischief.clothed_ingot": "Clothed Ingot",
+  "item.ratsmischief.rat_master_smithing_template": "Rat Master Smithing Template",
+  "item.ratsmischief.rat_master_smithing_template.applies_to": "Rat Master equipment",
+  "item.ratsmischief.rat_master_smithing_template.ingredients": "Clothed Ingot",
+  "item.ratsmischief.rat_master_smithing_template.title": "Rat Master Upgrade",
+  "item.ratsmischief.rat_master_smithing_template.base_slot": "Add compatible equipment",
+  "item.ratsmischief.rat_master_smithing_template.additions_slot": "Add Clothed Ingot",
   "item.ratsmischief.rat_master_ocarina": "Rat Master Ocarina",
   "item.ratsmischief.rat_master_hood": "Rat Master Hood",
   "item.ratsmischief.rat_master_mask": "Rat Master Mask",

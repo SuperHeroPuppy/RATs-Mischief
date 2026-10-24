@@ -11,11 +11,10 @@
     "LivingEntityMixin",
     "PlayerEntityMixin",
     "ScreenHandlerMixin",
-    "SculkSensorBlockEntityMixin",
-    "SculkShriekerBlockEntityMixin",
-    "WardenEntityMixin"
+    "VibrationListenerMixin"
   ],
   "client": [
+    "client.MinecraftClientMixin",
     "client.ArmorFeatureRendererMixin",
     "client.BipedEntityModelMixin",
     "client.EntityRendererMixin",

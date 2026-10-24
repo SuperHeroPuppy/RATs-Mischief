@@ -3,6 +3,7 @@ package ladysnake.ratsmischief.common.item;
 import ladysnake.ratsmischief.common.RatsMischief;
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import ladysnake.ratsmischief.common.init.ModEntities;
+import ladysnake.ratsmischief.client.render.item.RatItemRenderer;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,30 +17,34 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.network.GeckoLibNetwork;
-import software.bernie.geckolib3.network.ISyncable;
-import software.bernie.geckolib3.util.GeckoLibUtil;
-import xyz.amymialee.mialeemisc.util.MialeeText;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
+import software.bernie.geckolib.animatable.client.RenderProvider;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+import ladysnake.ratsmischief.common.util.RatText;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 
 import static net.minecraft.text.Style.EMPTY;
 
-public class RatItem extends Item implements IAnimatable, ISyncable {
-	private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
+public class RatItem extends Item implements GeoItem {
+	private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
+	private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
 
 	public RatItem(Settings settings) {
 		super(settings);
-		GeckoLibNetwork.registerSyncable(this);
+		SingletonGeoAnimatable.registerSyncedAnimatable(this);
 	}
 
 	public static void cycleRatReturn(ItemStack stack) {
@@ -49,6 +54,7 @@ public class RatItem extends Item implements IAnimatable, ISyncable {
 		}
 		if (ratTag.getBoolean("Spy")) {
 			ratTag.putBoolean("ShouldReturnToOwnerInventory", false);
+			return;
 		}
 		ratTag.putBoolean("ShouldReturnToOwnerInventory", !ratTag.getBoolean("ShouldReturnToOwnerInventory"));
 	}
@@ -96,23 +102,38 @@ public class RatItem extends Item implements IAnimatable, ISyncable {
 		return DyeColor.byName(ratColor.toLowerCase(), DyeColor.WHITE);
 	}
 
-	private <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+	private PlayState predicate(AnimationState<RatItem> event) {
 		return PlayState.CONTINUE;
 	}
 
 	@Override
-	public void registerControllers(AnimationData data) {
-		AnimationController<RatItem> controller = new AnimationController<>(this, "idle", 20, this::predicate);
-		data.addAnimationController(controller);
+	public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+		controllers.add(new AnimationController<>(this, "idle", 20, this::predicate));
 	}
 
 	@Override
-	public AnimationFactory getFactory() {
-		return this.factory;
+	public AnimatableInstanceCache getAnimatableInstanceCache() {
+		return this.animationCache;
 	}
 
 	@Override
-	public void onAnimationSync(int id, int state) {
+	public void createRenderer(Consumer<Object> consumer) {
+		consumer.accept(new RenderProvider() {
+			private RatItemRenderer renderer;
+
+			@Override
+			public BuiltinModelItemRenderer getCustomRenderer() {
+				if (this.renderer == null) {
+					this.renderer = new RatItemRenderer();
+				}
+				return this.renderer;
+			}
+		});
+	}
+
+	@Override
+	public Supplier<Object> getRenderProvider() {
+		return this.renderProvider;
 	}
 
 	@Override
@@ -134,12 +155,19 @@ public class RatItem extends Item implements IAnimatable, ISyncable {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		PlayerEntity owner = context.getPlayer();
+		if (owner == null) {
+			return ActionResult.PASS;
+		}
 		Hand hand = context.getHand();
 		World world = context.getWorld();
-
-		world.spawnEntity(this.getRatFromItem(world, owner.getStackInHand(hand), context.getHitPos(),
-			hand == Hand.OFF_HAND ? PlayerInventory.OFF_HAND_SLOT : owner.getInventory().getSlotWithStack(owner.getStackInHand(hand))));
-		owner.setStackInHand(hand, ItemStack.EMPTY);
+		if (!world.isClient()) {
+			RatEntity rat = this.getRatFromItem(world, owner.getStackInHand(hand), context.getHitPos(),
+				hand == Hand.OFF_HAND ? PlayerInventory.OFF_HAND_SLOT : owner.getInventory().getSlotWithStack(owner.getStackInHand(hand)));
+			if (rat == null || !world.spawnEntity(rat)) {
+				return ActionResult.FAIL;
+			}
+			owner.setStackInHand(hand, ItemStack.EMPTY);
+		}
 
 		return ActionResult.SUCCESS;
 	}
@@ -166,7 +194,10 @@ public class RatItem extends Item implements IAnimatable, ISyncable {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		NbtCompound ratTag = getRatTag(stack, world);
+		NbtCompound ratTag = getRatTag(stack);
+		if (ratTag == null) {
+			ratTag = new NbtCompound();
+		}
 		MutableText ratType = Text.translatable("type.ratsmischief." + getRatType(stack).name().toLowerCase());
 
 		Style style = EMPTY.withColor(Formatting.DARK_GRAY);
@@ -182,10 +213,15 @@ public class RatItem extends Item implements IAnimatable, ISyncable {
 		}
 
 		// potion genes
-		Identifier potionId = new Identifier(ratTag.getString("PotionGene"));
-		StatusEffect statusEffect = Registry.STATUS_EFFECT.get(potionId);
-		if (statusEffect != null) {
-			tooltip.add(Text.translatable("item.ratsmischief.rat.tooltip.potion").setStyle(EMPTY.withColor(Formatting.GRAY)).append(MialeeText.withColor(Text.translatable(statusEffect.getTranslationKey()).setStyle(EMPTY), statusEffect.getColor())));
+		String potionGene = ratTag.getString("PotionGene");
+		if (!potionGene.isEmpty()) {
+			Identifier potionId = Identifier.tryParse(potionGene);
+			if (potionId != null) {
+				StatusEffect statusEffect = Registries.STATUS_EFFECT.get(potionId);
+				if (statusEffect != null) {
+					tooltip.add(Text.translatable("item.ratsmischief.rat.tooltip.potion").setStyle(EMPTY.withColor(Formatting.GRAY)).append(RatText.withColor(Text.translatable(statusEffect.getTranslationKey()).setStyle(EMPTY), statusEffect.getColor())));
+				}
+			}
 		}
 
 		// set to return

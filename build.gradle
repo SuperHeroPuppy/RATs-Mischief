@@ -1,6 +1,6 @@
 plugins {
     id 'maven-publish'
-    id 'fabric-loom' version '1.2.8'
+    id 'fabric-loom' version '1.9.2'
 }
 
 archivesBaseName = project.archives_base_name
@@ -36,6 +36,7 @@ repositories {
 	 }
 
 	maven { url 'https://jitpack.io' }
+	maven { url 'https://repo.sleeping.town/' }
 
 	maven {
 		name "modrinth"
@@ -44,10 +45,13 @@ repositories {
 
 	maven { url 'https://masa.dy.fi/maven' }
 
-	maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
-
-	// mialee misc
-	maven { url "https://maven.willbl.dev/releases" }
+	maven {
+		url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+		content {
+			includeGroupByRegex('software\\.bernie.*')
+			includeGroup('com.eliotlash.mclib')
+		}
+	}
 
 	maven {
 		url = 'https://maven.jamieswhiteshirt.com/libs-release/'
@@ -71,24 +75,14 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${minecraft_version}+build.${yarn_mappings}:v2"
 
-	modImplementation "software.bernie.geckolib:${project.geckolib_version}"
+	modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
+	implementation "com.eliotlash.mclib:mclib:20"
 
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
 
-	// reach attributes
-	modImplementation("com.github.emilyploszaj:step-height-entity-attribute:v1.0.1")
-	include("com.github.emilyploszaj:step-height-entity-attribute:v1.0.1")
-
 	// mod menu
 	modImplementation("com.terraformersmc:modmenu:${mod_menu_version}") { transitive = false }
-
-	// mixin extras
-	implementation include("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
-	annotationProcessor("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
-
-	// mialee misc
-	modImplementation include("xyz.amymialee:mialeemisc:${project.mialeemisc_version}")
 
 	// ok zoomer
 //	runtimeOnly("com.github.EnnuiL:OkZoomer:1.19.2-SNAPSHOT")
@@ -115,7 +109,7 @@ java {
     withSourcesJar()
 }
 
-// Minecraft 1.19.2 and this version of Mixin must run on Java 17 even when
+// Minecraft 1.20.1 and this version of Mixin must run on Java 17 even when
 // Gradle itself was started with a newer JDK.
 tasks.withType(JavaExec).configureEach {
     javaLauncher = javaToolchains.launcherFor {

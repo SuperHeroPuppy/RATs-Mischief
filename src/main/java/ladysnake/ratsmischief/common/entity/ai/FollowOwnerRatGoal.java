@@ -25,7 +25,7 @@ public class FollowOwnerRatGoal extends Goal {
 
 	public FollowOwnerRatGoal(RatEntity rat, double speed, float minDistance, float maxDistance, boolean leavesAllowed) {
 		this.rat = rat;
-		this.world = rat.world;
+		this.world = rat.getWorld();
 		this.speed = speed;
 		this.navigation = rat.getNavigation();
 		this.minDistance = minDistance;

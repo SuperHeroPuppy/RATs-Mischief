@@ -1,12 +1,15 @@
 {
-  "type": "minecraft:smithing",
-  "addition": {
-    "item": "ratsmischief:clothed_ingot"
-  },
-  "base": {
-    "item": "minecraft:wither_skeleton_skull"
-  },
-  "result": {
-    "item": "ratsmischief:rat_master_mask"
-  }
+    "type":  "minecraft:smithing_transform",
+    "addition":  {
+                     "item":  "ratsmischief:clothed_ingot"
+                 },
+    "base":  {
+                 "item":  "minecraft:wither_skeleton_skull"
+             },
+    "result":  {
+                   "item":  "ratsmischief:rat_master_mask"
+               },
+    "template":  {
+                     "item":  "ratsmischief:rat_master_smithing_template"
+                 }
 }

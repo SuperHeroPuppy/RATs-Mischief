@@ -1,8 +1,8 @@
-# Fabric 1.19.2 port
+# Custom Fabric 1.20.1 port
 
-This worktree is a Fabric copy of the `custom-2.0.1` branch. It keeps Minecraft at 1.19.2. The original `custom` checkout is unchanged.
+This worktree updates the custom Fabric 1.19.2 branch to Minecraft 1.20.1. The 1.19.2 checkout remains separate. The port uses Fabric Loader, Fabric API, GeckoLib 4, Trinkets, and Cardinal Components. It has no Quilt or Requiem runtime dependency; the rat-specific possession implementation remains in this project.
 
-Build and run with Java 17. On this Windows machine, use the following PowerShell commands in this directory:
+Build and launch with Java 17:
 
 ```powershell
 $env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
@@ -10,10 +10,8 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
 .\gradlew.bat runClient
 ```
 
-Gradle 8.1 and the Minecraft 1.19.2 development runtime fail under Java 25, even though Java compilation uses a Java 17 toolchain. The run tasks also select a Java 17 launcher explicitly. Install the resulting `ratsmischief-2.0.1-custom-fabric.jar` alongside Fabric API 0.76.1, GeckoLib 3.1.40 for Fabric, Trinkets 3.4.1, and Cardinal Components base and entity 5.0.2. Mialee Misc and the step height attribute mod are nested in the jar.
+The output is `build/libs/ratsmischief-2.0.1-custom-fabric-1.20.1.jar`. Install it with Fabric API 0.92.2+1.20.1, GeckoLib 4.4.9, Trinkets 3.7.2, and Cardinal Components base and entity 5.2.3. Fabric Loader 0.16.14 or newer is required.
 
-The 1.19.2 release of Requiem requires Quilt, so this port replaces its RAT's Mischief interactions with Fabric code. The Curse of the Rat creates and controls a rat until the effect expires. The Rat Master Mirror controls a nearby owned spy rat; press **V** to return to the player's body. Movement, jumping, flying ascent, and basic attacks are supported while controlling a rat.
+Rat Master smithing recipes now use a Rat Master Smithing Template. Craft one from paper and a clothed ingot, then combine the template, base item, and another clothed ingot in the smithing table. The ocarina cycles actions on left click through a client to server packet.
 
-This replacement does not include Requiem's general soul, shell, or possession systems. Players in rat control use spectator mode, so normal block and inventory interaction while controlling a rat is unavailable. Requiem remnant state in existing Quilt saves is not converted. Test saves should be backed up before opening them with this port.
-
-The Fabric client reaches Minecraft startup with the mod loaded. Rat control gameplay should be checked in a client and server session before release.
+The client starts and enters an integrated world. The Fabric possession replacement controls a rat for the Curse of the Rat and an owned spy rat for the Rat Master Mirror; press **V** to return. As in the 1.19.2 Fabric port, controlled players use spectator mode, and Requiem's general soul and shell systems and save data conversion are outside this mod. Rat control, equipment, crafting, and multiplayer gameplay still need a manual playtest before release.

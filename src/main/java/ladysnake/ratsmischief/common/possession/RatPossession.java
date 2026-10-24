@@ -64,11 +64,11 @@ public final class RatPossession {
 		if (SESSIONS.containsKey(player.getUuid())) {
 			return;
 		}
-		RatEntity rat = new RatEntity(ModEntities.RAT, player.world);
+		RatEntity rat = new RatEntity(ModEntities.RAT, player.getWorld());
 		rat.copyPositionAndRotation(player);
 		rat.setTamed(true);
 		rat.setOwner(player);
-		if (player.world.spawnEntity(rat)) {
+		if (player.getWorld().spawnEntity(rat)) {
 			start(player, rat, true);
 		}
 	}
@@ -85,7 +85,7 @@ public final class RatPossession {
 		SESSIONS.put(player.getUuid(), session);
 		rat.setAiDisabled(true);
 		player.changeGameMode(GameMode.SPECTATOR);
-		player.teleport((ServerWorld) rat.world, rat.getX(), rat.getY(), rat.getZ(), rat.getYaw(), rat.getPitch());
+		player.teleport((ServerWorld) rat.getWorld(), rat.getX(), rat.getY(), rat.getZ(), rat.getYaw(), rat.getPitch());
 		player.setCameraEntity(rat);
 	}
 
@@ -126,7 +126,7 @@ public final class RatPossession {
 			rat.setVelocity(rat.getVelocity().x, 0.2, rat.getVelocity().z);
 		}
 		if (attack && session.attackCooldown == 0) {
-			rat.world.getOtherEntities(rat, rat.getBoundingBox().expand(2.5), entity -> entity instanceof LivingEntity && entity.isAlive() && entity != player)
+			rat.getWorld().getOtherEntities(rat, rat.getBoundingBox().expand(2.5), entity -> entity instanceof LivingEntity && entity.isAlive() && entity != player)
 				.stream().min((a, b) -> Double.compare(a.squaredDistanceTo(rat), b.squaredDistanceTo(rat)))
 				.ifPresent(rat::tryAttack);
 			session.attackCooldown = 10;
@@ -150,7 +150,7 @@ public final class RatPossession {
 			}
 			if (session.attackCooldown > 0) session.attackCooldown--;
 			if (player.squaredDistanceTo(session.rat) > 16) {
-				player.teleport((ServerWorld) session.rat.world, session.rat.getX(), session.rat.getY(), session.rat.getZ(), session.rat.getYaw(), session.rat.getPitch());
+				player.teleport((ServerWorld) session.rat.getWorld(), session.rat.getX(), session.rat.getY(), session.rat.getZ(), session.rat.getYaw(), session.rat.getPitch());
 			}
 		}
 	}
@@ -161,7 +161,7 @@ public final class RatPossession {
 		Vec3d destination = session.cursed ? rat.getPos() : session.origin;
 		player.setCameraEntity(player);
 		player.changeGameMode(session.previousGameMode);
-		player.teleport((ServerWorld) player.world, destination.x, destination.y, destination.z, player.getYaw(), player.getPitch());
+		player.teleport((ServerWorld) player.getWorld(), destination.x, destination.y, destination.z, player.getYaw(), player.getPitch());
 		rat.setAiDisabled(session.wasAiDisabled);
 		if (session.cursed) rat.discard();
 		if (kill) player.kill();

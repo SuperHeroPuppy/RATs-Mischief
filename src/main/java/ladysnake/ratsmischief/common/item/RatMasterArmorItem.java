@@ -15,8 +15,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import xyz.amymialee.mialeemisc.util.MialeeMath;
-import xyz.amymialee.mialeemisc.util.MialeeText;
+import ladysnake.ratsmischief.common.util.RatMath;
+import ladysnake.ratsmischief.common.util.RatText;
 
 import java.util.List;
 import java.util.Set;
@@ -25,12 +25,18 @@ public class RatMasterArmorItem extends ArmorItem {
 	public static final Set<EquipmentSlot> SLOTS = Set.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 
 	public RatMasterArmorItem(ArmorMaterial material, EquipmentSlot slot, Settings settings) {
-		super(material, slot, settings);
+		super(material, switch (slot) {
+			case HEAD -> Type.HELMET;
+			case CHEST -> Type.CHESTPLATE;
+			case LEGS -> Type.LEGGINGS;
+			case FEET -> Type.BOOTS;
+			default -> throw new IllegalArgumentException("Unsupported armor slot: " + slot);
+		}, settings);
 	}
 
 	public static MasterArmorBoost getType(ItemStack stack) {
 		NbtCompound compound = stack.getOrCreateNbt();
-		return MasterArmorBoost.values()[MialeeMath.clampLoop(compound.getInt("type"), 0, MasterArmorBoost.values().length)];
+		return MasterArmorBoost.values()[RatMath.clampLoop(compound.getInt("type"), 0, MasterArmorBoost.values().length)];
 	}
 
 	public static float getEquippedPieces(LivingEntity owner) {
@@ -90,18 +96,18 @@ public class RatMasterArmorItem extends ArmorItem {
 
 	public void incrementType(ItemStack stack, boolean sneaking) {
 		NbtCompound compound = stack.getOrCreateNbt();
-		compound.putInt("type", MialeeMath.clampLoop(compound.getInt("type") + 1, 1, MasterArmorBoost.values().length));
+		compound.putInt("type", RatMath.clampLoop(compound.getInt("type") + 1, 1, MasterArmorBoost.values().length));
 	}
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		switch (getType(stack)) {
 			case RESISTANCE ->
-				tooltip.add(MialeeText.withColor(Text.translatable("item.ratsmischief.rat_master_armor.tooltip.resistance"), 10044730));
+				tooltip.add(RatText.withColor(Text.translatable("item.ratsmischief.rat_master_armor.tooltip.resistance"), 10044730));
 			case DAMAGE ->
-				tooltip.add(MialeeText.withColor(Text.translatable("item.ratsmischief.rat_master_armor.tooltip.damage"), 9643043));
+				tooltip.add(RatText.withColor(Text.translatable("item.ratsmischief.rat_master_armor.tooltip.damage"), 9643043));
 			case MINING_SPEED ->
-				tooltip.add(MialeeText.withColor(Text.translatable("item.ratsmischief.rat_master_armor.tooltip.mining_speed"), 14270531));
+				tooltip.add(RatText.withColor(Text.translatable("item.ratsmischief.rat_master_armor.tooltip.mining_speed"), 14270531));
 		}
 		RatsMischiefClientHelper.addSetBonus(tooltip);
 		super.appendTooltip(stack, world, tooltip, context);
@@ -120,13 +126,13 @@ public class RatMasterArmorItem extends ArmorItem {
 		private static final int[] PROTECTION_AMOUNTS = new int[]{3, 6, 8, 3};
 
 		@Override
-		public int getDurability(EquipmentSlot slot) {
-			return BASE_DURABILITY[slot.getEntitySlotId()] * 38;
+		public int getDurability(Type type) {
+			return BASE_DURABILITY[type.getEquipmentSlot().getEntitySlotId()] * 38;
 		}
 
 		@Override
-		public int getProtectionAmount(EquipmentSlot slot) {
-			return PROTECTION_AMOUNTS[slot.getEntitySlotId()];
+		public int getProtection(Type type) {
+			return PROTECTION_AMOUNTS[type.getEquipmentSlot().getEntitySlotId()];
 		}
 
 		@Override

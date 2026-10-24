@@ -5,8 +5,8 @@ import ladysnake.ratsmischief.common.effect.RatCurseStatusEffect;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import xyz.amymialee.mialeemisc.effects.OpenStatusEffect;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ public interface ModStatusEffects {
 	Map<StatusEffect, Identifier> EFFECTS = new LinkedHashMap<>();
 
 	StatusEffect RAT_CURSE = createStatusEffect("rat_curse", new RatCurseStatusEffect(StatusEffectCategory.NEUTRAL, 0x31363F));
-	StatusEffect RAT_CURSE_COOLDOWN = createStatusEffect("rat_curse_cooldown", new OpenStatusEffect(StatusEffectCategory.NEUTRAL, 0x31363F));
+	StatusEffect RAT_CURSE_COOLDOWN = createStatusEffect("rat_curse_cooldown", new StatusEffect(StatusEffectCategory.NEUTRAL, 0x31363F) {});
 
 	private static <T extends StatusEffect> T createStatusEffect(String name, T effect) {
 		EFFECTS.put(effect, new Identifier(RatsMischief.MOD_ID, name));
@@ -23,6 +23,6 @@ public interface ModStatusEffects {
 	}
 
 	static void initialize() {
-		EFFECTS.keySet().forEach(item -> Registry.register(Registry.STATUS_EFFECT, EFFECTS.get(item), item));
+		EFFECTS.keySet().forEach(item -> Registry.register(Registries.STATUS_EFFECT, EFFECTS.get(item), item));
 	}
 }

@@ -13,13 +13,11 @@
   },
   "mixins": ["ratsmischief.mixins.json"],
   "depends": {
-    "fabricloader": ">=0.14.21",
-    "minecraft": "1.19.2",
+    "fabricloader": ">=0.16.14",
+    "minecraft": "1.20.1",
     "java": ">=17",
     "fabric-api": "*",
-    "geckolib3": "*",
-    "trinkets": "*",
-    "mialeemisc": "*",
-    "step-height-entity-attribute": "*"
+    "geckolib": "*",
+    "trinkets": "*"
   }
 }

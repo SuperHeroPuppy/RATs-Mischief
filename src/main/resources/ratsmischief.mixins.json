@@ -18,8 +18,10 @@
     "client.BipedEntityModelMixin",
     "client.EntityRendererMixin",
     "client.HeadFeatureRendererMixin",
+    "client.HandledScreenMixin",
     "client.HeldItemRendererMixin",
     "client.InGameHudMixin",
+    "client.InventoryScreenMixin",
     "client.ItemEntityRendererMixin",
     "client.KeyboardInputMixin",
     "client.PlayerEntityRendererMixin"

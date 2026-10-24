@@ -2,15 +2,12 @@ package ladysnake.ratsmischief.client;
 
 import ladysnake.ratsmischief.common.possession.RatPossession;
 import ladysnake.ratsmischief.common.entity.RatEntity;
-import ladysnake.ratsmischief.common.init.ModStatusEffects;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.text.Text;
 import net.minecraft.network.PacketByteBuf;
 import org.lwjgl.glfw.GLFW;
 
@@ -64,18 +61,6 @@ public final class RatPossessionClient {
 			packet.writeBoolean(client.options.attackKey.isPressed());
 			packet.writeBoolean(RETURN_TO_BODY.wasPressed());
 			ClientPlayNetworking.send(RatPossession.CONTROL_PACKET, packet);
-		});
-		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
-			if (!isControllingRat()) return;
-			MinecraftClient client = MinecraftClient.getInstance();
-			RatEntity rat = (RatEntity) client.getCameraEntity();
-			int health = (int) Math.ceil(rat.getHealth());
-			int maxHealth = (int) Math.ceil(rat.getMaxHealth());
-			Text status = Text.translatable("hud.ratsmischief.rat_control", health, maxHealth);
-			drawContext.drawTextWithShadow(client.textRenderer, status, 8, 8, 0xFFFFFF);
-			if (!client.player.hasStatusEffect(ModStatusEffects.RAT_CURSE)) {
-				drawContext.drawTextWithShadow(client.textRenderer, Text.translatable("hud.ratsmischief.rat_return"), 8, 20, 0xBBBBBB);
-			}
 		});
 	}
 }

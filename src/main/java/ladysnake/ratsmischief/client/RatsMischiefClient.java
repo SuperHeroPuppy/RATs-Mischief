@@ -1,6 +1,7 @@
 package ladysnake.ratsmischief.client;
 
 import ladysnake.ratsmischief.client.render.entity.RatEntityRenderer;
+import ladysnake.ratsmischief.client.render.armor.RatArmorRenderer;
 import ladysnake.ratsmischief.client.render.item.RatMasterMaskItemRenderer;
 import ladysnake.ratsmischief.common.RatsMischief;
 import ladysnake.ratsmischief.common.init.ModEntities;
@@ -9,6 +10,7 @@ import ladysnake.ratsmischief.common.init.ModParticles;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
@@ -19,6 +21,7 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
@@ -43,15 +46,20 @@ public class RatsMischiefClient implements ClientModInitializer {
 		ModParticles.init();
 
 		EntityRendererRegistry.register(ModEntities.RAT, RatEntityRenderer::new);
+		ArmorRenderer.register(new RatArmorRenderer(),
+			ModItems.RAT_MASTER_HOOD, ModItems.RAT_MASTER_CLOAK, ModItems.RAT_MASTER_BREECHES, ModItems.RAT_MASTER_GREAVES,
+			ModItems.RAT_BELLICIST_HOOD, ModItems.RAT_BELLICIST_CLOAK, ModItems.RAT_BELLICIST_BREECHES, ModItems.RAT_BELLICIST_GREAVES);
 
-		Identifier itemId = Registries.ITEM.getId(ModItems.RAT_MASTER_MASK);
-		RatMasterMaskItemRenderer inventoryItemRenderer = new RatMasterMaskItemRenderer(itemId);
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(inventoryItemRenderer);
-		BuiltinItemRendererRegistry.INSTANCE.register(ModItems.RAT_MASTER_MASK, inventoryItemRenderer);
-		ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-			out.accept(new ModelIdentifier(itemId, "inventory"));
-			out.accept(new ModelIdentifier(new Identifier(itemId.getNamespace(), itemId.getPath() + "_worn"), "inventory"));
-		});
+		for (Item item : new Item[]{ModItems.RAT_MASTER_MASK, ModItems.RAT_BELLICIST_HORNS}) {
+			Identifier itemId = Registries.ITEM.getId(item);
+			RatMasterMaskItemRenderer itemRenderer = new RatMasterMaskItemRenderer(itemId);
+			ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(itemRenderer);
+			BuiltinItemRendererRegistry.INSTANCE.register(item, itemRenderer);
+			ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
+				out.accept(new ModelIdentifier(itemId, "inventory"));
+				out.accept(new ModelIdentifier(new Identifier(itemId.getNamespace(), itemId.getPath() + "_worn"), "inventory"));
+			});
+		}
 
 		// model predicates
 		FabricModelPredicateProviderRegistry.register(new Identifier(RatsMischief.MOD_ID + ":filled"), (itemStack, world, livingEntity, seed) -> itemStack.getOrCreateSubNbt(RatsMischief.MOD_ID).getFloat("filled"));

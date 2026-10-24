@@ -40,6 +40,24 @@ public class RatPouchItem extends Item {
 		this.size = size;
 	}
 
+	public ItemStack createFilledCreativeStack() {
+		ItemStack stack = new ItemStack(this);
+		NbtList rats = new NbtList();
+		for (int i = 0; i < this.size; i++) {
+			NbtCompound rat = new NbtCompound();
+			rat.putString("id", RatsMischief.MOD_ID + ":rat");
+			rat.putString("RatType", RatEntity.Type.WILD.name());
+			rat.putString("Color", "white");
+			rat.putFloat("Health", 8.0f);
+			rat.putInt("Age", 0);
+			rats.add(rat);
+		}
+		NbtCompound data = stack.getOrCreateSubNbt(RatsMischief.MOD_ID);
+		data.put("rats", rats);
+		data.putFloat("filled", 1.0f);
+		return stack;
+	}
+
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if (!world.isClient() && user.isSneaking()) {

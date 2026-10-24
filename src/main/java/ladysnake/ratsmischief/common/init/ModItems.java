@@ -47,6 +47,11 @@ public interface ModItems {
 	Item RAT_MASTER_MIRROR = createItem("rat_master_mirror", new RatMasterMirrorItem(new FabricItemSettings().maxCount(1)));
 	Item RAT_MASTER_OCARINA = createItem("rat_master_ocarina", new RatMasterOcarinaItem(new FabricItemSettings().maxCount(1)));
 	Item RAT_MASTER_MASK = createItem("rat_master_mask", new RatMasterMaskItem(new FabricItemSettings().maxCount(1)));
+	Item RAT_BELLICIST_HOOD = createItem("rat_bellicist_hood", new RatMasterHoodItem(RatMasterArmorItem.RatBellicistArmorMaterial.INSTANCE, EquipmentSlot.HEAD, new FabricItemSettings()));
+	Item RAT_BELLICIST_CLOAK = createItem("rat_bellicist_cloak", new RatMasterCloakItem(RatMasterArmorItem.RatBellicistArmorMaterial.INSTANCE, EquipmentSlot.CHEST, new FabricItemSettings()));
+	Item RAT_BELLICIST_BREECHES = createItem("rat_bellicist_breeches", new RatMasterArmorItem(RatMasterArmorItem.RatBellicistArmorMaterial.INSTANCE, EquipmentSlot.LEGS, new FabricItemSettings()));
+	Item RAT_BELLICIST_GREAVES = createItem("rat_bellicist_greaves", new RatMasterArmorItem(RatMasterArmorItem.RatBellicistArmorMaterial.INSTANCE, EquipmentSlot.FEET, new FabricItemSettings()));
+	Item RAT_BELLICIST_HORNS = createItem("rat_bellicist_horns", new RatHornsItem(new FabricItemSettings().maxCount(1)));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, new Identifier(RatsMischief.MOD_ID, name));

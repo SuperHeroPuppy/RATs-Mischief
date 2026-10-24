@@ -165,4 +165,50 @@ public class RatMasterArmorItem extends ArmorItem {
 			return 0.0f;
 		}
 	}
+
+	public static class RatBellicistArmorMaterial implements ArmorMaterial {
+		public static final RatBellicistArmorMaterial INSTANCE = new RatBellicistArmorMaterial();
+		private static final int[] BASE_DURABILITY = {13, 15, 16, 11};
+		private static final int[] PROTECTION_AMOUNTS = {3, 6, 8, 3};
+
+		@Override
+		public int getDurability(Type type) {
+			return BASE_DURABILITY[type.getEquipmentSlot().getEntitySlotId()] * 38;
+		}
+
+		@Override
+		public int getProtection(Type type) {
+			return PROTECTION_AMOUNTS[type.getEquipmentSlot().getEntitySlotId()];
+		}
+
+		@Override
+		public int getEnchantability() {
+			return 16;
+		}
+
+		@Override
+		public SoundEvent getEquipSound() {
+			return SoundEvents.ITEM_ARMOR_EQUIP_GOLD;
+		}
+
+		@Override
+		public Ingredient getRepairIngredient() {
+			return Ingredient.ofItems(Items.NETHERITE_INGOT);
+		}
+
+		@Override
+		public String getName() {
+			return "rat_bellicist";
+		}
+
+		@Override
+		public float getToughness() {
+			return 3.0f;
+		}
+
+		@Override
+		public float getKnockbackResistance() {
+			return 0.1f;
+		}
+	}
 }

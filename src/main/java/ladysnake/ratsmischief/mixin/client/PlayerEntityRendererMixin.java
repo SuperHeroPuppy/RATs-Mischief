@@ -1,6 +1,7 @@
 package ladysnake.ratsmischief.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import ladysnake.ratsmischief.client.render.entity.GildedHornsFeatureRenderer;
 import ladysnake.ratsmischief.common.init.ModItems;
 import ladysnake.ratsmischief.common.util.PlayerEntityRendererWrapper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -39,6 +40,11 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerEntityRenderer;addFeature(Lnet/minecraft/client/render/entity/feature/FeatureRenderer;)Z", ordinal = 0))
 	private void mischief$masterArmor(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
 		this.isSlim = slim;
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void ratsmischief$addHorns(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
+		this.addFeature(new GildedHornsFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
 	}
 
 	@Inject(method = "setModelPose", at = @At(value = "TAIL"))

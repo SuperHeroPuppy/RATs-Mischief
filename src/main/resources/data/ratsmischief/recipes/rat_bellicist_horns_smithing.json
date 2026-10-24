@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": { "item": "ratsmischief:rat_master_smithing_template" },
+  "base": { "item": "ratsmischief:rat_master_mask" },
+  "addition": { "item": "minecraft:netherite_ingot" },
+  "result": { "item": "ratsmischief:rat_bellicist_horns" }
+}

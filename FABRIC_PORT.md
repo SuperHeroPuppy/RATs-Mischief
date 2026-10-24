@@ -2,7 +2,15 @@
 
 This worktree is a Fabric copy of the `custom-2.0.1` branch. It keeps Minecraft at 1.19.2. The original `custom` checkout is unchanged.
 
-Build with Java 17 using `./gradlew build` (or `gradlew.bat build` on Windows). Install the resulting `ratsmischief-2.0.1-custom-fabric.jar` alongside Fabric API 0.76.1, GeckoLib 3.1.40 for Fabric, Trinkets 3.4.1, and Cardinal Components base and entity 5.0.2. Mialee Misc and the step height attribute mod are nested in the jar.
+Build and run with Java 17. On this Windows machine, use the following PowerShell commands in this directory:
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
+.\gradlew.bat build
+.\gradlew.bat runClient
+```
+
+Gradle 8.1 and the Minecraft 1.19.2 development runtime fail under Java 25, even though Java compilation uses a Java 17 toolchain. The run tasks also select a Java 17 launcher explicitly. Install the resulting `ratsmischief-2.0.1-custom-fabric.jar` alongside Fabric API 0.76.1, GeckoLib 3.1.40 for Fabric, Trinkets 3.4.1, and Cardinal Components base and entity 5.0.2. Mialee Misc and the step height attribute mod are nested in the jar.
 
 The 1.19.2 release of Requiem requires Quilt, so this port replaces its RAT's Mischief interactions with Fabric code. The Curse of the Rat creates and controls a rat until the effect expires. The Rat Master Mirror controls a nearby owned spy rat; press **V** to return to the player's body. Movement, jumping, flying ascent, and basic attacks are supported while controlling a rat.
 

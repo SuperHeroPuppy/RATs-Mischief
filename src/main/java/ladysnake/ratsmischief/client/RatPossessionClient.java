@@ -13,6 +13,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -26,12 +27,17 @@ public final class RatPossessionClient {
 	private static float bodyYaw;
 	private static float bodyPitch;
 	private static boolean cursed;
+	private static boolean renderingBodyShell;
 
 	private RatPossessionClient() {}
 
 	public static boolean isControllingRat() {
 		MinecraftClient client = MinecraftClient.getInstance();
 		return client.player != null && client.getCameraEntity() instanceof RatEntity;
+	}
+
+	public static boolean isRenderingBodyShell() {
+		return renderingBodyShell;
 	}
 
 	public static void initialize() {
@@ -101,8 +107,12 @@ public final class RatPossessionClient {
 		float previousBody = player.prevBodyYaw;
 		float head = player.headYaw;
 		float previousHead = player.prevHeadYaw;
+		EntityPose pose = player.getPose();
+		float limbSpeed = player.limbAnimator.getSpeed();
 		try {
 			player.setInvisible(false);
+			player.setPose(EntityPose.STANDING);
+			player.limbAnimator.setSpeed(0);
 			player.setYaw(bodyYaw);
 			player.prevYaw = bodyYaw;
 			player.setPitch(bodyPitch);
@@ -114,14 +124,18 @@ public final class RatPossessionClient {
 				BlockPos.ofFloored(bodyOrigin.x, bodyOrigin.y + 1, bodyOrigin.z));
 			context.matrixStack().push();
 			try {
+				renderingBodyShell = true;
 				client.getEntityRenderDispatcher().render(player,
 					bodyOrigin.x - camera.x, bodyOrigin.y - camera.y, bodyOrigin.z - camera.z,
 					bodyYaw, context.tickDelta(), context.matrixStack(), consumers, light);
 			} finally {
+				renderingBodyShell = false;
 				context.matrixStack().pop();
 			}
 		} finally {
 			player.setInvisible(wasInvisible);
+			player.setPose(pose);
+			player.limbAnimator.setSpeed(limbSpeed);
 			player.setYaw(yaw);
 			player.prevYaw = previousYaw;
 			player.setPitch(pitch);

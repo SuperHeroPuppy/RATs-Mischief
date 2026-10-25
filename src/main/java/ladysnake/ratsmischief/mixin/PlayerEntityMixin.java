@@ -2,9 +2,14 @@ package ladysnake.ratsmischief.mixin;
 
 import ladysnake.ratsmischief.common.init.ModEnchantments;
 import ladysnake.ratsmischief.common.init.ModStatusEffects;
+import ladysnake.ratsmischief.common.entity.RatEntity;
+import ladysnake.ratsmischief.common.possession.RatPossession;
+import ladysnake.ratsmischief.common.possession.RatPossessionView;
 import ladysnake.ratsmischief.common.util.PlayerRatOwner;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -29,6 +34,24 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerRa
 		super(entityType, world);
 	}
 
+	@Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
+	private void ratsmischief$useRatDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
+		PlayerEntity player = (PlayerEntity) (Object) this;
+		RatEntity rat = player.getWorld().isClient
+			? (player instanceof RatPossessionView view ? view.ratsmischief$getControlledRat() : null)
+			: RatPossession.getControlledRat(player);
+		if (rat != null) cir.setReturnValue(rat.getDimensions(pose));
+	}
+
+	@Inject(method = "getActiveEyeHeight", at = @At("HEAD"), cancellable = true)
+	private void ratsmischief$useRatEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> cir) {
+		PlayerEntity player = (PlayerEntity) (Object) this;
+		RatEntity rat = player.getWorld().isClient
+			? (player instanceof RatPossessionView view ? view.ratsmischief$getControlledRat() : null)
+			: RatPossession.getControlledRat(player);
+		if (rat != null) cir.setReturnValue(rat.getEyeHeight(pose));
+	}
+
 	@Inject(method = "damageArmor", at = @At("HEAD"), cancellable = true)
 	public void ratsmischef$removeRatArmorDamage(DamageSource source, float amount, CallbackInfo ci) {
 		if (Objects.equals(source.getName(), "rat")) {
@@ -39,11 +62,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerRa
 	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
 	public void ratsmischef$writeCustomDataToNbt(net.minecraft.nbt.NbtCompound nbt, CallbackInfo ci) {
 		nbt.putBoolean("shouldRatsBringItems", this.shouldRatsBringItems);
+		RatPossession.writeBodyInventory((PlayerEntity) (Object) this, nbt);
 	}
 
 	@Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
 	public void ratsmischef$readCustomDataFromNbt(net.minecraft.nbt.NbtCompound nbt, CallbackInfo ci) {
 		this.shouldRatsBringItems = nbt.getBoolean("shouldRatsBringItems");
+		RatPossession.recoverBodyInventory((PlayerEntity) (Object) this, nbt);
 	}
 
 	@Override

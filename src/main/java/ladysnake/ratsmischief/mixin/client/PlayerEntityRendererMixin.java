@@ -2,9 +2,13 @@ package ladysnake.ratsmischief.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import ladysnake.ratsmischief.client.render.entity.GildedHornsFeatureRenderer;
+import ladysnake.ratsmischief.client.RatPossessionClient;
 import ladysnake.ratsmischief.common.init.ModItems;
 import ladysnake.ratsmischief.common.util.PlayerEntityRendererWrapper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
@@ -27,6 +31,12 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
 	public PlayerEntityRendererMixin(EntityRendererFactory.Context ctx, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
 		super(ctx, model, shadowRadius);
+	}
+
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
+	private void ratsmischief$renderOnlyBodyShell(AbstractClientPlayerEntity player, float yaw, float tickDelta,
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+		if (player == MinecraftClient.getInstance().player && RatPossessionClient.isControllingRat()) ci.cancel();
 	}
 
 	@Inject(method = "getArmPose", at = @At("HEAD"), cancellable = true)

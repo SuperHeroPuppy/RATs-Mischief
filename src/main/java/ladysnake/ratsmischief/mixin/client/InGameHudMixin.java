@@ -26,12 +26,19 @@ public abstract class InGameHudMixin {
 	@Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$renderEmptyRatHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		if (!RatPossessionClient.isControllingRat() || client.player.getAbilities().creativeMode) return;
+		if (!RatPossessionClient.isControllingRat()) return;
 		int x = this.scaledWidth / 2;
 		context.getMatrices().push();
 		context.getMatrices().translate(0, 0, -90);
-		context.drawTexture(RAT_HOTBAR_TEXTURE, x - 91, this.scaledHeight - 22, 0, 0, 182, 22);
+		// Requiem's fully locked inventory leaves just the host's single hand slot.
+		context.drawTexture(RAT_HOTBAR_TEXTURE, x - 12, this.scaledHeight - 22, 0, 0, 3, 22);
+		context.drawTexture(RAT_HOTBAR_TEXTURE, x - 9, this.scaledHeight - 22, 3, 0, 18, 22);
+		context.drawTexture(RAT_HOTBAR_TEXTURE, x + 9, this.scaledHeight - 22, 179, 0, 3, 22);
 		context.drawTexture(RAT_HOTBAR_TEXTURE, x - 12, this.scaledHeight - 23, 0, 22, 24, 22);
+		if (!client.player.getMainHandStack().isEmpty()) {
+			context.drawItem(client.player.getMainHandStack(), x - 8, this.scaledHeight - 19);
+			context.drawItemInSlot(client.textRenderer, client.player.getMainHandStack(), x - 8, this.scaledHeight - 19);
+		}
 		context.getMatrices().pop();
 		ci.cancel();
 	}
@@ -39,7 +46,8 @@ public abstract class InGameHudMixin {
 	@Inject(method = "renderStatusBars", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$renderRatHearts(DrawContext context, CallbackInfo ci) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.player == null || !(client.getCameraEntity() instanceof RatEntity rat)) return;
+		RatEntity rat = RatPossessionClient.getControlledRat();
+		if (client.player == null || rat == null) return;
 		int health = (int) Math.ceil(rat.getHealth());
 		this.renderHealthBar(context, client.player, this.scaledWidth / 2 - 91, this.scaledHeight - 39,
 			10, -1, rat.getMaxHealth(), health, health, 0, false);

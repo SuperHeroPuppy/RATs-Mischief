@@ -37,11 +37,4 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
-	private void ratsmischief$preventBodyUse(CallbackInfo ci) {
-		if (RatPossessionClient.isControllingRat()) {
-			RatPossessionClient.requestReturn();
-			ci.cancel();
-		}
-	}
 }

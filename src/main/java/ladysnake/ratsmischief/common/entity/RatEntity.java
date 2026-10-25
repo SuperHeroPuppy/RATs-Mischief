@@ -14,6 +14,7 @@ import ladysnake.ratsmischief.common.init.ModSoundEvents;
 import ladysnake.ratsmischief.common.item.RatMasterArmorItem;
 import ladysnake.ratsmischief.common.item.RatMasterOcarinaItem;
 import ladysnake.ratsmischief.common.item.RatPouchItem;
+import ladysnake.ratsmischief.common.possession.RatPossession;
 import ladysnake.ratsmischief.common.util.PlayerRatOwner;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -936,7 +937,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 
 	@Override
 	public boolean canPickUpLoot() {
-		return !this.isSitting();
+		return !this.isSitting() && !RatPossession.isControlledRat(this);
 	}
 
 	@Override

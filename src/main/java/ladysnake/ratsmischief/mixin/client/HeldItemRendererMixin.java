@@ -1,6 +1,7 @@
 package ladysnake.ratsmischief.mixin.client;
 
 import ladysnake.ratsmischief.common.item.RatItem;
+import ladysnake.ratsmischief.client.RatPossessionClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;
@@ -28,5 +29,12 @@ public abstract class HeldItemRendererMixin {
 			this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
 			matrices.pop();
 		}
+	}
+
+	@Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
+	private void ratsmischief$hideBodyHand(AbstractClientPlayerEntity player, float tickDelta, float pitch,
+		Hand hand, float swingProgress, ItemStack itemStack, float equipProgress, MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+		if (RatPossessionClient.isControllingRat()) ci.cancel();
 	}
 }

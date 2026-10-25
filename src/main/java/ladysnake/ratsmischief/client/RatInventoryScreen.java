@@ -4,16 +4,19 @@ import com.mojang.datafixers.util.Pair;
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 /** Inventory layout used while looking through a rat. */
-public final class RatInventoryScreen extends InventoryScreen {
+public final class RatInventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler> {
 
 	public RatInventoryScreen(PlayerEntity player) {
-		super(player);
+		super(player.playerScreenHandler, player.getInventory(), Text.translatable("container.crafting"));
 		this.backgroundWidth = 176;
 		this.backgroundHeight = 166;
 		this.titleX = 96;
@@ -32,7 +35,8 @@ public final class RatInventoryScreen extends InventoryScreen {
 
 	@Override
 	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-		if (this.client != null && this.client.getCameraEntity() instanceof RatEntity rat) {
+		RatEntity rat = RatPossessionClient.getControlledRat();
+		if (rat != null) {
 			context.drawText(this.textRenderer, rat.getName(), this.titleX, this.titleY, 0x404040, false);
 		}
 	}
@@ -50,6 +54,8 @@ public final class RatInventoryScreen extends InventoryScreen {
 
 		for (int row = 0; row < 4; row++) this.drawSlot(context, x + 7, y + 7 + row * 18);
 		this.drawSlot(context, x + 46, y + 61);
+		if (this.client != null && !this.client.player.getMainHandStack().isEmpty())
+			context.drawItem(this.client.player.getMainHandStack(), x + 47, y + 62);
 		this.drawSlot(context, x + 76, y + 61);
 		this.drawSlotIcon(context, this.handler.slots.get(45), x + 77, y + 62);
 		for (int row = 0; row < 4; row++) {
@@ -61,7 +67,8 @@ public final class RatInventoryScreen extends InventoryScreen {
 		context.fill(x + 135, y + 30, x + 149, y + 34, 0xFF8B8B8B);
 		context.fill(x + 146, y + 27, x + 151, y + 37, 0xFF8B8B8B);
 		this.drawSlot(context, x + 153, y + 25);
-		if (this.client != null && this.client.getCameraEntity() instanceof RatEntity rat) {
+		RatEntity rat = RatPossessionClient.getControlledRat();
+		if (rat != null) {
 			context.enableScissor(x + 16, y + 83, x + 160, y + 153);
 			InventoryScreen.drawEntity(context, x + 91, y + 150, 30,
 				(float) (x + 91 - mouseX), (float) (y + 100 - mouseY), rat);

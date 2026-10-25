@@ -4,6 +4,7 @@ import net.minecraft.client.render.VertexConsumer;
 import ladysnake.ratsmischief.client.model.RatEntityModel;
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import net.minecraft.client.MinecraftClient;
+import ladysnake.ratsmischief.client.RatPossessionClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -52,6 +53,8 @@ public class RatEntityRenderer extends GeoEntityRenderer<RatEntity> {
 		if (!isReRender && bone.getName().equals("bodybone")) {
 			ItemStack itemStack = ratEntity.isSitting() || ratEntity.isSneaking()
 				? ItemStack.EMPTY : ratEntity.getEquippedStack(EquipmentSlot.MAINHAND);
+			if (RatPossessionClient.getControlledRat() == ratEntity && MinecraftClient.getInstance().player != null)
+				itemStack = MinecraftClient.getInstance().player.getMainHandStack();
 			stack.push();
 			stack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90));
 			stack.translate(bone.getPosX(), bone.getPosZ(), bone.getPosY() - 0.05);

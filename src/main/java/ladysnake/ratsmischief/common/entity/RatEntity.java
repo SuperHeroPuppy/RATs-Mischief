@@ -670,6 +670,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
+		if (RatPossession.isControllerAndHost(player, this)) return ActionResult.PASS;
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (this.getWorld().isClient) {

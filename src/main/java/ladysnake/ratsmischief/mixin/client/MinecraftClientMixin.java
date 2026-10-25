@@ -5,6 +5,7 @@ import ladysnake.ratsmischief.client.RatPossessionClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,6 +14,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
+	@Inject(method = "handleInputEvents", at = @At("HEAD"))
+	private void ratsmischief$lockBodyHotbar(CallbackInfo ci) {
+		if (!RatPossessionClient.isControllingRat()) return;
+		MinecraftClient client = (MinecraftClient) (Object) this;
+		for (KeyBinding binding : client.options.hotbarKeys) {
+			while (binding.wasPressed()) { /* the rat has no body hotbar */ }
+		}
+		while (client.options.dropKey.wasPressed()) { /* keep body items in place */ }
+		while (client.options.swapHandsKey.wasPressed()) { /* keep body equipment in place */ }
+	}
 	@Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$cycleOcarina(CallbackInfoReturnable<Boolean> cir) {
 		if (RatPossessionClient.isControllingRat()) {
@@ -28,6 +39,9 @@ public abstract class MinecraftClientMixin {
 
 	@Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$preventBodyUse(CallbackInfo ci) {
-		if (RatPossessionClient.isControllingRat()) ci.cancel();
+		if (RatPossessionClient.isControllingRat()) {
+			RatPossessionClient.requestReturn();
+			ci.cancel();
+		}
 	}
 }

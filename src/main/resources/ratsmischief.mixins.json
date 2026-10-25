@@ -17,6 +17,7 @@
     "client.MinecraftClientMixin",
     "client.BipedEntityModelMixin",
     "client.BodyShellPoseMixin",
+    "client.ClientPlayerEntityMixin",
     "client.EntityRendererMixin",
     "client.HeadFeatureRendererMixin",
     "client.HandledScreenMixin",
@@ -25,7 +26,8 @@
     "client.InventoryScreenMixin",
     "client.ItemEntityRendererMixin",
     "client.KeyboardInputMixin",
-    "client.PlayerEntityRendererMixin"
+    "client.PlayerEntityRendererMixin",
+    "client.PlayerInventoryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

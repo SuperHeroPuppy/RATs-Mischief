@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -25,6 +26,7 @@ import java.util.UUID;
 /** The Fabric replacement for the rat-specific possession provided by Requiem. */
 public final class RatPossession {
 	public static final Identifier CONTROL_PACKET = RatsMischief.id("rat_control");
+	public static final Identifier EXIT_PACKET = RatsMischief.id("rat_exit");
 	public static final Identifier CAMERA_PACKET = RatsMischief.id("rat_camera");
 	private static final String RECOVERY_TAG_PREFIX = "ratsmischief_rat_control_";
 	private static final Map<UUID, Session> SESSIONS = new HashMap<>();
@@ -42,6 +44,11 @@ public final class RatPossession {
 			boolean exit = buf.readBoolean();
 			server.execute(() -> control(player, yaw, pitch, forward, sideways, jump, attack, exit));
 		});
+		ServerPlayNetworking.registerGlobalReceiver(EXIT_PACKET, (server, player, handler, buf, responseSender) ->
+			server.execute(() -> {
+				Session session = SESSIONS.get(player.getUuid());
+				if (session != null && !session.cursed) end(player, session, false);
+			}));
 		ServerTickEvents.END_SERVER_TICK.register(RatPossession::tick);
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			ServerPlayerEntity player = handler.player;
@@ -133,12 +140,14 @@ public final class RatPossession {
 			direction = direction.normalize();
 		}
 		double verticalVelocity = rat.isFlying() && jump ? 0.25 : rat.getVelocity().y;
-		rat.setVelocity(direction.x * 0.3, verticalVelocity, direction.z * 0.3);
+		// Disabled mob AI does not reliably apply steering velocity. Move the rat with collision on the server.
+		rat.move(MovementType.SELF, new Vec3d(direction.x * 0.18, 0, direction.z * 0.18));
+		rat.setVelocity(0, verticalVelocity, 0);
 		rat.velocityDirty = true;
 		if (jump && rat.isOnGround()) {
-			rat.setVelocity(rat.getVelocity().x, 0.42, rat.getVelocity().z);
+			rat.setVelocity(0, 0.42, 0);
 		} else if (jump && rat.isTouchingWater()) {
-			rat.setVelocity(rat.getVelocity().x, 0.2, rat.getVelocity().z);
+			rat.setVelocity(0, 0.2, 0);
 		}
 		if (attack && session.attackCooldown == 0) {
 			rat.getWorld().getOtherEntities(rat, rat.getBoundingBox().expand(2.5), entity -> entity instanceof LivingEntity && entity.isAlive() && entity != player)

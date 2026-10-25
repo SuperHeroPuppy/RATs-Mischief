@@ -40,6 +40,17 @@ public final class RatPossessionClient {
 		return renderingBodyShell;
 	}
 
+	public static boolean isReturnKey(int keyCode, int scanCode) {
+		return RETURN_TO_BODY.matchesKey(keyCode, scanCode);
+	}
+
+	public static void requestReturn() {
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (controlledRatId >= 0 && !cursed && client.getNetworkHandler() != null) {
+			ClientPlayNetworking.send(RatPossession.EXIT_PACKET, PacketByteBufs.empty());
+		}
+	}
+
 	public static void initialize() {
 		ClientPlayNetworking.registerGlobalReceiver(RatPossession.CAMERA_PACKET, (client, handler, buf, responseSender) -> {
 			int entityId = buf.readVarInt();
@@ -62,6 +73,7 @@ public final class RatPossessionClient {
 				bodyOrigin = null;
 				return;
 			}
+			while (RETURN_TO_BODY.wasPressed()) requestReturn();
 			if (controlledRatId >= 0 && client.world.getEntityById(controlledRatId) instanceof RatEntity rat
 				&& client.getCameraEntity() != rat) {
 				client.setCameraEntity(rat);
@@ -85,7 +97,7 @@ public final class RatPossessionClient {
 			packet.writeByte((client.options.rightKey.isPressed() ? 1 : 0) - (client.options.leftKey.isPressed() ? 1 : 0));
 			packet.writeBoolean(client.options.jumpKey.isPressed());
 			packet.writeBoolean(client.options.attackKey.isPressed());
-			packet.writeBoolean(RETURN_TO_BODY.wasPressed());
+			packet.writeBoolean(false);
 			ClientPlayNetworking.send(RatPossession.CONTROL_PACKET, packet);
 		});
 		WorldRenderEvents.AFTER_ENTITIES.register(RatPossessionClient::renderBodyShell);

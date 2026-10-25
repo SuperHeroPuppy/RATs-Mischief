@@ -21,6 +21,16 @@ public final class RatInventoryScreen extends InventoryScreen {
 	}
 
 	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (RatPossessionClient.isReturnKey(keyCode, scanCode)) {
+			RatPossessionClient.requestReturn();
+			this.close();
+			return true;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
 	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
 		if (this.client != null && this.client.getCameraEntity() instanceof RatEntity rat) {
 			context.drawText(this.textRenderer, rat.getName(), this.titleX, this.titleY, 0x404040, false);

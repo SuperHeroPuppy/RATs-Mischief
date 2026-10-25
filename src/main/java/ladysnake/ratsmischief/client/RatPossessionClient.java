@@ -1,5 +1,6 @@
 package ladysnake.ratsmischief.client;
 
+import dev.emi.trinkets.api.TrinketInventory;
 import ladysnake.ratsmischief.common.possession.RatPossession;
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -172,6 +173,7 @@ public final class RatPossessionClient {
 			EquipmentSlot[] slots = EquipmentSlot.values();
 			for (int i = 0; i < slots.length; i++) bodyShell.equipStack(slots[i], bodyEquipment[i].copy());
 		}
+		TrinketInventory.copyFrom(client.player, bodyShell);
 	}
 
 	private static void tickBodyShell(MinecraftClient client) {

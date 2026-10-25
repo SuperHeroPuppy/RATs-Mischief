@@ -87,7 +87,8 @@ public final class RatPossession {
 	private static void start(ServerPlayerEntity player, RatEntity rat, boolean cursed) {
 		int previousFlags = (player.isInvisible() ? 1 : 0) | (player.isInvulnerable() ? 2 : 0)
 			| (player.hasNoGravity() ? 4 : 0) | (player.noClip ? 8 : 0);
-		Session session = new Session(rat, player.getPos(), cursed, rat.isAiDisabled(), previousFlags);
+		Session session = new Session(rat, player.getPos(), player.getYaw(), player.getPitch(),
+			cursed, rat.isAiDisabled(), previousFlags);
 		SESSIONS.put(player.getUuid(), session);
 		rat.setAiDisabled(true);
 		player.addCommandTag(RECOVERY_TAG_PREFIX + previousFlags);
@@ -98,7 +99,7 @@ public final class RatPossession {
 		player.setVelocity(Vec3d.ZERO);
 		player.teleport((ServerWorld) rat.getWorld(), rat.getX(), rat.getY(), rat.getZ(), rat.getYaw(), rat.getPitch());
 		player.setCameraEntity(rat);
-		sendCamera(player, rat.getId());
+		sendCamera(player, rat.getId(), session);
 	}
 
 	private static void control(ServerPlayerEntity player, float yaw, float pitch, int forward, int sideways,
@@ -171,7 +172,7 @@ public final class RatPossession {
 			}
 			if (player.getCameraEntity() != session.rat) {
 				player.setCameraEntity(session.rat);
-				sendCamera(player, session.rat.getId());
+				sendCamera(player, session.rat.getId(), session);
 			}
 		}
 	}
@@ -181,7 +182,7 @@ public final class RatPossession {
 		RatEntity rat = session.rat;
 		Vec3d destination = session.cursed ? rat.getPos() : session.origin;
 		player.setCameraEntity(player);
-		sendCamera(player, -1);
+		sendCamera(player, -1, null);
 		player.removeScoreboardTag(RECOVERY_TAG_PREFIX + session.previousFlags);
 		restorePlayerFlags(player, session.previousFlags);
 		player.setVelocity(Vec3d.ZERO);
@@ -191,10 +192,18 @@ public final class RatPossession {
 		if (kill) player.kill();
 	}
 
-	private static void sendCamera(ServerPlayerEntity player, int entityId) {
+	private static void sendCamera(ServerPlayerEntity player, int entityId, Session session) {
 		if (!player.networkHandler.isConnectionOpen()) return;
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeVarInt(entityId);
+		if (session != null) {
+			buf.writeDouble(session.origin.x);
+			buf.writeDouble(session.origin.y);
+			buf.writeDouble(session.origin.z);
+			buf.writeFloat(session.originYaw);
+			buf.writeFloat(session.originPitch);
+			buf.writeBoolean(session.cursed);
+		}
 		ServerPlayNetworking.send(player, CAMERA_PACKET, buf);
 	}
 
@@ -221,14 +230,19 @@ public final class RatPossession {
 	private static final class Session {
 		final RatEntity rat;
 		final Vec3d origin;
+		final float originYaw;
+		final float originPitch;
 		final boolean cursed;
 		final boolean wasAiDisabled;
 		final int previousFlags;
 		int attackCooldown;
 
-		Session(RatEntity rat, Vec3d origin, boolean cursed, boolean wasAiDisabled, int previousFlags) {
+		Session(RatEntity rat, Vec3d origin, float originYaw, float originPitch,
+		        boolean cursed, boolean wasAiDisabled, int previousFlags) {
 			this.rat = rat;
 			this.origin = origin;
+			this.originYaw = originYaw;
+			this.originPitch = originPitch;
 			this.cursed = cursed;
 			this.wasAiDisabled = wasAiDisabled;
 			this.previousFlags = previousFlags;

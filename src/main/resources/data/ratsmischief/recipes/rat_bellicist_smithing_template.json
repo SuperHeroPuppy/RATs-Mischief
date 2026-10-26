@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "minecraft:netherite_upgrade_smithing_template" },
+    { "item": "ratsmischief:contracted_ingot" },
+    { "item": "ratsmischief:rat_bellicist_cloth" }
+  ],
+  "result": { "item": "ratsmischief:rat_bellicist_smithing_template" }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "ratsmischief:unclothed_contracted_ingot" },
+    { "item": "ratsmischief:rat_bellicist_cloth" }
+  ],
+  "result": { "item": "ratsmischief:contracted_ingot" }
+}

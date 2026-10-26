@@ -65,6 +65,7 @@
   "item.ratsmischief.rat_master_mask.desc.offset1" : "Model can be offset with right click.",
   "item.ratsmischief.rat_master_mask.desc.offset2" : "Current offset: %s.",
   "item.ratsmischief.rat_pouch.tooltip.capacity": "Capacity: %s/%s",
+  "item.ratsmischief.rat_pouch.tooltip.loyalty": "Bound by Loyalty: only its original rats can return",
 
   "ratsmischief.subtitles.entity.rat.hurt": "Rat hurts",
   "ratsmischief.subtitles.entity.rat.death": "Rat dies",

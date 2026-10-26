@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": { "item": "ratsmischief:rat_master_smithing_template" },
+  "template": { "item": "ratsmischief:rat_bellicist_smithing_template" },
   "base": { "item": "ratsmischief:rat_master_breeches" },
-  "addition": { "item": "minecraft:netherite_ingot" },
+  "addition": { "item": "ratsmischief:contracted_ingot" },
   "result": { "item": "ratsmischief:rat_bellicist_breeches" }
 }

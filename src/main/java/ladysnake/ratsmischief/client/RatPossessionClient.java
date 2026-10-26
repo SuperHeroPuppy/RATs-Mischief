@@ -17,7 +17,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Direction;
@@ -113,6 +112,7 @@ public final class RatPossessionClient {
 			while (RETURN_TO_BODY.wasPressed()) requestReturn();
 			RatEntity controlled = getControlledRat();
 			if (controlled != null) {
+				client.player.noClip = client.player.isSpectator();
 				if (!clientRatFlagsSaved) {
 					ratWasNoGravity = controlled.hasNoGravity();
 					ratWasNoClip = controlled.noClip;
@@ -143,9 +143,6 @@ public final class RatPossessionClient {
 			rat.setPitch(pitch);
 			rat.setVelocity(client.player.getVelocity());
 			rat.setOnGround(client.player.isOnGround());
-			PacketByteBuf packet = PacketByteBufs.create();
-			packet.writeBoolean(client.currentScreen == null && client.options.attackKey.isPressed());
-			ClientPlayNetworking.send(RatPossession.CONTROL_PACKET, packet);
 		});
 		WorldRenderEvents.AFTER_ENTITIES.register(RatPossessionClient::renderBodyShell);
 	}

@@ -26,7 +26,7 @@ public abstract class InGameHudMixin {
 	@Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$renderEmptyRatHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
 		MinecraftClient client = MinecraftClient.getInstance();
-		if (!RatPossessionClient.isControllingRat()) return;
+		if (!RatPossessionClient.isControllingRat() || client.player.isSpectator()) return;
 		int x = this.scaledWidth / 2;
 		context.getMatrices().push();
 		context.getMatrices().translate(0, 0, -90);
@@ -47,7 +47,7 @@ public abstract class InGameHudMixin {
 	private void ratsmischief$renderRatHearts(DrawContext context, CallbackInfo ci) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		RatEntity rat = RatPossessionClient.getControlledRat();
-		if (client.player == null || rat == null) return;
+		if (client.player == null || client.player.isSpectator() || rat == null) return;
 		int health = (int) Math.ceil(rat.getHealth());
 		this.renderHealthBar(context, client.player, this.scaledWidth / 2 - 91, this.scaledHeight - 39,
 			10, -1, rat.getMaxHealth(), health, health, 0, false);

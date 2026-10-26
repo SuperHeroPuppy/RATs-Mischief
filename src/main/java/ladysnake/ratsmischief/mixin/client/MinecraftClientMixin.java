@@ -18,20 +18,17 @@ public abstract class MinecraftClientMixin {
 	private void ratsmischief$lockBodyHotbar(CallbackInfo ci) {
 		if (!RatPossessionClient.isControllingRat()) return;
 		MinecraftClient client = (MinecraftClient) (Object) this;
+		if (client.player.isSpectator()) return;
 		for (KeyBinding binding : client.options.hotbarKeys) {
 			while (binding.wasPressed()) { /* the rat has no body hotbar */ }
 		}
-		while (client.options.dropKey.wasPressed()) { /* keep body items in place */ }
 		while (client.options.swapHandsKey.wasPressed()) { /* keep body equipment in place */ }
 	}
 	@Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$cycleOcarina(CallbackInfoReturnable<Boolean> cir) {
-		if (RatPossessionClient.isControllingRat()) {
-			cir.setReturnValue(true);
-			return;
-		}
 		MinecraftClient client = (MinecraftClient) (Object) this;
-		if (client.player != null && client.player.getMainHandStack().getItem() instanceof RatMasterOcarinaItem) {
+		if (!RatPossessionClient.isControllingRat() && client.player != null
+			&& client.player.getMainHandStack().getItem() instanceof RatMasterOcarinaItem) {
 			ClientPlayNetworking.send(RatMasterOcarinaItem.CYCLE_PACKET, PacketByteBufs.empty());
 			cir.setReturnValue(true);
 		}

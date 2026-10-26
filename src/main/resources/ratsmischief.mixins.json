@@ -28,7 +28,8 @@
     "client.InventoryScreenMixin",
     "client.ItemEntityRendererMixin",
     "client.PlayerEntityRendererMixin",
-    "client.PlayerInventoryMixin"
+    "client.PlayerInventoryMixin",
+    "client.PossessedRatTargetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

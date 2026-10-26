@@ -14,6 +14,6 @@ public abstract class PlayerInventoryMixin {
 	private void ratsmischief$keepBodySelection(double scrollAmount, CallbackInfo ci) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.player != null && (Object) this == client.player.getInventory()
-			&& RatPossessionClient.isControllingRat()) ci.cancel();
+			&& RatPossessionClient.isControllingRat() && !client.player.isSpectator()) ci.cancel();
 	}
 }

@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -35,7 +34,6 @@ import java.util.UUID;
 
 /** The Fabric replacement for the rat-specific possession provided by Requiem. */
 public final class RatPossession {
-	public static final Identifier CONTROL_PACKET = RatsMischief.id("rat_control");
 	public static final Identifier EXIT_PACKET = RatsMischief.id("rat_exit");
 	public static final Identifier CAMERA_PACKET = RatsMischief.id("rat_camera");
 	private static final String RECOVERY_TAG_PREFIX = "ratsmischief_rat_control_";
@@ -102,10 +100,6 @@ public final class RatPossession {
 	}
 
 	public static void initialize() {
-		ServerPlayNetworking.registerGlobalReceiver(CONTROL_PACKET, (server, player, handler, buf, responseSender) -> {
-			boolean attack = buf.readBoolean();
-			server.execute(() -> control(player, attack));
-		});
 		ServerPlayNetworking.registerGlobalReceiver(EXIT_PACKET, (server, player, handler, buf, responseSender) ->
 			server.execute(() -> {
 				Session session = SESSIONS.get(player.getUuid());
@@ -192,11 +186,8 @@ public final class RatPossession {
 		player.setInvisible(true);
 		player.setInvulnerable(true);
 		player.setNoGravity(false);
-		player.noClip = false;
+		player.noClip = player.isSpectator();
 		player.setVelocity(Vec3d.ZERO);
-		player.getAbilities().flying = false;
-		player.getAbilities().allowFlying = false;
-		player.sendAbilitiesUpdate();
 		EntityAttributeInstance speed = player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (speed != null) {
 			speed.removeModifier(SPEED_MODIFIER_ID);
@@ -211,23 +202,6 @@ public final class RatPossession {
 		player.calculateDimensions();
 		player.teleport((ServerWorld) rat.getWorld(), rat.getX(), rat.getY(), rat.getZ(), rat.getYaw(), rat.getPitch());
 		sendCamera(player, rat.getId(), session);
-	}
-
-	private static void control(ServerPlayerEntity player, boolean attack) {
-		Session session = SESSIONS.get(player.getUuid());
-		if (session == null) {
-			return;
-		}
-		RatEntity rat = session.rat;
-		if (!rat.isAlive()) {
-			return;
-		}
-		if (attack && session.attackCooldown == 0) {
-			rat.getWorld().getOtherEntities(rat, rat.getBoundingBox().expand(2.5), entity -> entity instanceof LivingEntity && entity.isAlive() && entity != player)
-				.stream().min((a, b) -> Double.compare(a.squaredDistanceTo(rat), b.squaredDistanceTo(rat)))
-				.ifPresent(rat::tryAttack);
-			session.attackCooldown = 10;
-		}
 	}
 
 	private static void tick(MinecraftServer server) {
@@ -248,12 +222,7 @@ public final class RatPossession {
 				end(player, session, kill);
 				continue;
 			}
-			if (session.attackCooldown > 0) session.attackCooldown--;
-			if (player.getAbilities().allowFlying || player.getAbilities().flying) {
-				player.getAbilities().allowFlying = false;
-				player.getAbilities().flying = false;
-				player.sendAbilitiesUpdate();
-			}
+			player.noClip = player.isSpectator();
 			followPlayer(session.rat, player);
 		}
 	}
@@ -387,7 +356,6 @@ public final class RatPossession {
 		final boolean wasAllowedToFly;
 		final boolean wasFlying;
 		final GameMode startGameMode;
-		int attackCooldown;
 
 		Session(RatEntity rat, Vec3d origin, float originYaw, float originPitch,
 		        boolean cursed, boolean wasAiDisabled, boolean wasNoGravity,

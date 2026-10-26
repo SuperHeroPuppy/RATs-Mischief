@@ -31,7 +31,11 @@ public interface ModItems {
 	Item RAT_MASTER_POUCH = createItem("rat_master_pouch", new RatPouchItem(new FabricItemSettings().maxCount(1), 20));
 
 	Item CLOTHED_INGOT = createItem("clothed_ingot", new Item(new FabricItemSettings()));
-	Item MISCHIEF_INGOT = createItem("mischief_ingot", new Item(new FabricItemSettings()));
+	Item CONTRACTED_INGOT = createItem("contracted_ingot", new Item(new FabricItemSettings()));
+	Item UNCLOTHED_INGOT = createItem("unclothed_ingot", new Item(new FabricItemSettings()));
+	Item UNCLOTHED_CONTRACTED_INGOT = createItem("unclothed_contracted_ingot", new Item(new FabricItemSettings()));
+	Item RAT_MASTER_CLOTH = createItem("rat_master_cloth", new Item(new FabricItemSettings()));
+	Item RAT_BELLICIST_CLOTH = createItem("rat_bellicist_cloth", new Item(new FabricItemSettings()));
 	Item LOYALTY_OF_THE_MISCHIEF = createItem("loyalty_of_the_mischief", new Item(new FabricItemSettings().maxCount(1)));
 	Item RAT_MASTER_SMITHING_TEMPLATE = createItem("rat_master_smithing_template", new SmithingTemplateItem(
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.applies_to"),
@@ -39,6 +43,15 @@ public interface ModItems {
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.title"),
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.base_slot"),
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.additions_slot"),
+		List.of(new Identifier("item/empty_armor_slot_helmet"), new Identifier("item/empty_armor_slot_chestplate"),
+			new Identifier("item/empty_armor_slot_leggings"), new Identifier("item/empty_armor_slot_boots")),
+		List.of(new Identifier("item/empty_slot_ingot"))));
+	Item RAT_BELLICIST_SMITHING_TEMPLATE = createItem("rat_bellicist_smithing_template", new SmithingTemplateItem(
+		Text.translatable("item.ratsmischief.rat_bellicist_smithing_template.applies_to"),
+		Text.translatable("item.ratsmischief.rat_bellicist_smithing_template.ingredients"),
+		Text.translatable("item.ratsmischief.rat_bellicist_smithing_template.title"),
+		Text.translatable("item.ratsmischief.rat_bellicist_smithing_template.base_slot"),
+		Text.translatable("item.ratsmischief.rat_bellicist_smithing_template.additions_slot"),
 		List.of(new Identifier("item/empty_armor_slot_helmet"), new Identifier("item/empty_armor_slot_chestplate"),
 			new Identifier("item/empty_armor_slot_leggings"), new Identifier("item/empty_armor_slot_boots")),
 		List.of(new Identifier("item/empty_slot_ingot"))));

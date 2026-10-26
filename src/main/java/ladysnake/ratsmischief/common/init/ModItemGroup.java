@@ -25,9 +25,14 @@ public final class ModItemGroup {
 				addPouch(entries, (RatPouchItem) ModItems.PURPUR_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.RAT_MASTER_POUCH);
 				entries.add(ModItems.CLOTHED_INGOT);
-				entries.add(ModItems.MISCHIEF_INGOT);
+				entries.add(ModItems.CONTRACTED_INGOT);
+				entries.add(ModItems.UNCLOTHED_INGOT);
+				entries.add(ModItems.UNCLOTHED_CONTRACTED_INGOT);
+				entries.add(ModItems.RAT_MASTER_CLOTH);
+				entries.add(ModItems.RAT_BELLICIST_CLOTH);
 				entries.add(ModItems.LOYALTY_OF_THE_MISCHIEF);
 				entries.add(ModItems.RAT_MASTER_SMITHING_TEMPLATE);
+				entries.add(ModItems.RAT_BELLICIST_SMITHING_TEMPLATE);
 				entries.add(ModItems.RAT_MASTER_HOOD);
 				entries.add(ModItems.RAT_MASTER_CLOAK);
 				entries.add(ModItems.RAT_MASTER_BREECHES);

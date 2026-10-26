@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:item/netherite_upgrade_smithing_template"
+    "layer0": "ratsmischief:item/rat_master_template"
   }
 }

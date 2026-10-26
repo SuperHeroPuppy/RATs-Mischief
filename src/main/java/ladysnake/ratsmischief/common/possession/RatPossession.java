@@ -4,6 +4,7 @@ import ladysnake.ratsmischief.common.RatsMischief;
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import ladysnake.ratsmischief.common.init.ModEntities;
 import ladysnake.ratsmischief.common.init.ModStatusEffects;
+import ladysnake.ratsmischief.common.init.ModSoundEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -35,6 +36,7 @@ import java.util.UUID;
 /** The Fabric replacement for the rat-specific possession provided by Requiem. */
 public final class RatPossession {
 	public static final Identifier EXIT_PACKET = RatsMischief.id("rat_exit");
+	public static final Identifier SLAP_PACKET = RatsMischief.id("rat_slap");
 	public static final Identifier CAMERA_PACKET = RatsMischief.id("rat_camera");
 	private static final String RECOVERY_TAG_PREFIX = "ratsmischief_rat_control_";
 	private static final String HOST_RECOVERY_TAG_PREFIX = "ratsmischief_rat_host_";
@@ -104,6 +106,15 @@ public final class RatPossession {
 			server.execute(() -> {
 				Session session = SESSIONS.get(player.getUuid());
 				if (session != null && !session.cursed) end(player, session, false);
+			}));
+		ServerPlayNetworking.registerGlobalReceiver(SLAP_PACKET, (server, player, handler, buf, responseSender) ->
+			server.execute(() -> {
+				Session session = SESSIONS.get(player.getUuid());
+				if (session != null && session.rat.isAlive() && !player.isSpectator() && session.slapCooldown == 0) {
+					session.rat.playSound(ModSoundEvents.ENTITY_RAT_CLAP,
+						1.0f, 0.9f + session.rat.getRandom().nextFloat() * 0.2f);
+					session.slapCooldown = 4;
+				}
 			}));
 		ServerTickEvents.END_SERVER_TICK.register(RatPossession::tick);
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
@@ -223,6 +234,7 @@ public final class RatPossession {
 				continue;
 			}
 			player.noClip = player.isSpectator();
+			if (session.slapCooldown > 0) session.slapCooldown--;
 			followPlayer(session.rat, player);
 		}
 	}
@@ -356,6 +368,7 @@ public final class RatPossession {
 		final boolean wasAllowedToFly;
 		final boolean wasFlying;
 		final GameMode startGameMode;
+		int slapCooldown;
 
 		Session(RatEntity rat, Vec3d origin, float originYaw, float originPitch,
 		        boolean cursed, boolean wasAiDisabled, boolean wasNoGravity,

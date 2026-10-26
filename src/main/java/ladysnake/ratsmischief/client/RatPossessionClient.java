@@ -64,6 +64,13 @@ public final class RatPossessionClient {
 		}
 	}
 
+	public static void requestSlap() {
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (isControllingRat() && client.player != null && !client.player.isSpectator()
+			&& client.getNetworkHandler() != null)
+			ClientPlayNetworking.send(RatPossession.SLAP_PACKET, PacketByteBufs.empty());
+	}
+
 	public static void initialize() {
 		ClientPlayNetworking.registerGlobalReceiver(RatPossession.CAMERA_PACKET, (client, handler, buf, responseSender) -> {
 			int entityId = buf.readVarInt();

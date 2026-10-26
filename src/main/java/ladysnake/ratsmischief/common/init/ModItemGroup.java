@@ -25,6 +25,8 @@ public final class ModItemGroup {
 				addPouch(entries, (RatPouchItem) ModItems.PURPUR_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.RAT_MASTER_POUCH);
 				entries.add(ModItems.CLOTHED_INGOT);
+				entries.add(ModItems.MISCHIEF_INGOT);
+				entries.add(ModItems.LOYALTY_OF_THE_MISCHIEF);
 				entries.add(ModItems.RAT_MASTER_SMITHING_TEMPLATE);
 				entries.add(ModItems.RAT_MASTER_HOOD);
 				entries.add(ModItems.RAT_MASTER_CLOAK);
@@ -38,6 +40,7 @@ public final class ModItemGroup {
 				entries.add(ModItems.RAT_BELLICIST_BREECHES);
 				entries.add(ModItems.RAT_BELLICIST_GREAVES);
 				entries.add(ModItems.RAT_BELLICIST_HORNS);
+				entries.add(ModItems.RAT_BELLICIST_CARNYX);
 			})
 			.build();
 		Registry.register(Registries.ITEM_GROUP, RatsMischief.id("items"), group);

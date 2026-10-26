@@ -31,6 +31,8 @@ public interface ModItems {
 	Item RAT_MASTER_POUCH = createItem("rat_master_pouch", new RatPouchItem(new FabricItemSettings().maxCount(1), 20));
 
 	Item CLOTHED_INGOT = createItem("clothed_ingot", new Item(new FabricItemSettings()));
+	Item MISCHIEF_INGOT = createItem("mischief_ingot", new Item(new FabricItemSettings()));
+	Item LOYALTY_OF_THE_MISCHIEF = createItem("loyalty_of_the_mischief", new Item(new FabricItemSettings().maxCount(1)));
 	Item RAT_MASTER_SMITHING_TEMPLATE = createItem("rat_master_smithing_template", new SmithingTemplateItem(
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.applies_to"),
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.ingredients"),
@@ -52,6 +54,7 @@ public interface ModItems {
 	Item RAT_BELLICIST_BREECHES = createItem("rat_bellicist_breeches", new RatMasterArmorItem(RatMasterArmorItem.RatBellicistArmorMaterial.INSTANCE, EquipmentSlot.LEGS, new FabricItemSettings()));
 	Item RAT_BELLICIST_GREAVES = createItem("rat_bellicist_greaves", new RatMasterArmorItem(RatMasterArmorItem.RatBellicistArmorMaterial.INSTANCE, EquipmentSlot.FEET, new FabricItemSettings()));
 	Item RAT_BELLICIST_HORNS = createItem("rat_bellicist_horns", new RatHornsItem(new FabricItemSettings().maxCount(1)));
+	Item RAT_BELLICIST_CARNYX = createItem("rat_bellicist_carnyx", new Item(new FabricItemSettings().maxCount(1)));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, new Identifier(RatsMischief.MOD_ID, name));

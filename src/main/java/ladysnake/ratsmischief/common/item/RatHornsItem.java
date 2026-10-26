@@ -1,25 +1,29 @@
 package ladysnake.ratsmischief.common.item;
 
-import ladysnake.ratsmischief.common.cca.RatHornsComponent;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketItem;
+import dev.emi.trinkets.api.TrinketsApi;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
+import net.minecraft.util.Pair;
 
-public final class RatHornsItem extends Item {
+import java.util.Optional;
+
+public final class RatHornsItem extends TrinketItem {
 	public RatHornsItem(Settings settings) {
 		super(settings);
 	}
 
-	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack stack = user.getStackInHand(hand);
-		if (!world.isClient()) {
-			RatHornsComponent horns = RatHornsComponent.KEY.get(user);
-			horns.setHorns(!horns.hasHorns());
+	public static ItemStack getWornHorns(LivingEntity entity) {
+		Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(entity);
+		if (component.isPresent()) {
+			for (Pair<SlotReference, ItemStack> pair : component.get().getAllEquipped()) {
+				if (pair.getRight().getItem() instanceof RatHornsItem) {
+					return pair.getRight();
+				}
+			}
 		}
-		return TypedActionResult.success(stack, world.isClient());
+		return ItemStack.EMPTY;
 	}
 }

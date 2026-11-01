@@ -110,6 +110,9 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 	private static final TrackedData<Integer> ATTACK_RIDING_TIME = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> POTION_GENE = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> SLOT = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Boolean> POSSESSED = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> POSSESSED_MOVING = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<ItemStack> POSSESSED_HAND = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
 	public Goal action;
 	public int actionTimer = 0;
@@ -193,6 +196,9 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 		this.dataTracker.startTracking(ATTACK_RIDING_TIME, 0);
 		this.dataTracker.startTracking(POTION_GENE, -1);
 		this.dataTracker.startTracking(SLOT, 0);
+		this.dataTracker.startTracking(POSSESSED, false);
+		this.dataTracker.startTracking(POSSESSED_MOVING, false);
+		this.dataTracker.startTracking(POSSESSED_HAND, ItemStack.EMPTY);
 
 		this.dataTracker.startTracking(PARTY_HAT, PARTY_HATS.get(this.random.nextInt(PARTY_HATS.size())).toString());
 	}
@@ -231,7 +237,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 			this.setEating(false);
 			event.getController().setAnimation(FLAT_ANIMATION);
 			return PlayState.CONTINUE;
-		} else if (event.isMoving()) {
+		} else if (event.isMoving() || (this.isPossessed() && this.isPossessedMoving())) {
 			this.setSniffing(false);
 			this.setEating(false);
 			if (this.getRatType() == Type.JERMA) {
@@ -807,6 +813,34 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 
 	public boolean isSpy() {
 		return this.dataTracker.get(SPY);
+	}
+
+	public boolean isPossessed() {
+		return this.dataTracker.get(POSSESSED);
+	}
+
+	public boolean isPossessedMoving() {
+		return this.dataTracker.get(POSSESSED_MOVING);
+	}
+
+	public void setPossessedMoving(boolean moving) {
+		this.dataTracker.set(POSSESSED_MOVING, moving);
+	}
+
+	public ItemStack getPossessedHand() {
+		return this.dataTracker.get(POSSESSED_HAND);
+	}
+
+	public void setPossessedHand(ItemStack hand) {
+		this.dataTracker.set(POSSESSED, true);
+		if (!ItemStack.areEqual(this.dataTracker.get(POSSESSED_HAND), hand))
+			this.dataTracker.set(POSSESSED_HAND, hand.copy());
+	}
+
+	public void clearPossessedHand() {
+		this.dataTracker.set(POSSESSED, false);
+		this.dataTracker.set(POSSESSED_MOVING, false);
+		this.dataTracker.set(POSSESSED_HAND, ItemStack.EMPTY);
 	}
 
 	public void setSpy(boolean spy) {

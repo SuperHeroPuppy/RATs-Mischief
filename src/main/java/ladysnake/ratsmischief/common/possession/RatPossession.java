@@ -1,10 +1,10 @@
 package ladysnake.ratsmischief.common.possession;
 
+import dev.emi.trinkets.api.TrinketsApi;
 import ladysnake.ratsmischief.common.RatsMischief;
 import ladysnake.ratsmischief.common.entity.RatEntity;
 import ladysnake.ratsmischief.common.init.ModEntities;
 import ladysnake.ratsmischief.common.init.ModStatusEffects;
-import ladysnake.ratsmischief.common.init.ModSoundEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -36,8 +36,8 @@ import java.util.UUID;
 /** The Fabric replacement for the rat-specific possession provided by Requiem. */
 public final class RatPossession {
 	public static final Identifier EXIT_PACKET = RatsMischief.id("rat_exit");
-	public static final Identifier SLAP_PACKET = RatsMischief.id("rat_slap");
 	public static final Identifier CAMERA_PACKET = RatsMischief.id("rat_camera");
+	public static final Identifier BODY_PACKET = RatsMischief.id("rat_body");
 	private static final String RECOVERY_TAG_PREFIX = "ratsmischief_rat_control_";
 	private static final String HOST_RECOVERY_TAG_PREFIX = "ratsmischief_rat_host_";
 	private static final String BODY_INVENTORY_TAG = "ratsmischief_body_inventory";
@@ -107,15 +107,6 @@ public final class RatPossession {
 				Session session = SESSIONS.get(player.getUuid());
 				if (session != null && !session.cursed) end(player, session, false);
 			}));
-		ServerPlayNetworking.registerGlobalReceiver(SLAP_PACKET, (server, player, handler, buf, responseSender) ->
-			server.execute(() -> {
-				Session session = SESSIONS.get(player.getUuid());
-				if (session != null && session.rat.isAlive() && !player.isSpectator() && session.slapCooldown == 0) {
-					session.rat.playSound(ModSoundEvents.ENTITY_RAT_CLAP,
-						1.0f, 0.9f + session.rat.getRandom().nextFloat() * 0.2f);
-					session.slapCooldown = 4;
-				}
-			}));
 		ServerTickEvents.END_SERVER_TICK.register(RatPossession::tick);
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof RatEntity rat) recoverHostState(rat);
@@ -127,6 +118,11 @@ public final class RatPossession {
 		});
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> server.execute(() -> {
 			recoverPlayerState(handler.player);
+			for (Map.Entry<UUID, Session> entry : SESSIONS.entrySet()) {
+				ServerPlayerEntity controller = server.getPlayerManager().getPlayer(entry.getKey());
+				if (controller != null && controller != handler.player && controller.getWorld() == handler.player.getWorld())
+					sendBodyState(handler.player, controller, entry.getValue());
+			}
 			if (handler.player.hasStatusEffect(ModStatusEffects.RAT_CURSE)) {
 				beginCurse(handler.player);
 			}
@@ -166,7 +162,7 @@ public final class RatPossession {
 			| (player.hasNoGravity() ? 4 : 0) | (player.noClip ? 8 : 0);
 		Session session = new Session(rat, player.getPos(), player.getYaw(), player.getPitch(),
 			cursed, rat.isAiDisabled(), rat.hasNoGravity(), rat.noClip, previousFlags,
-			player.getInventory().writeNbt(new NbtList()), captureBodyEquipment(player),
+			player.getInventory().writeNbt(new NbtList()), captureBodyEquipment(player), captureBodyTrinkets(player),
 			player.getInventory().selectedSlot, player.getAbilities().allowFlying,
 			player.getAbilities().flying, player.interactionManager.getGameMode());
 		SESSIONS.put(player.getUuid(), session);
@@ -193,6 +189,7 @@ public final class RatPossession {
 		rat.setVelocity(Vec3d.ZERO);
 		rat.setNoGravity(true);
 		rat.noClip = true;
+		rat.setPossessedHand(player.getInventory().getStack(0));
 		player.addCommandTag(RECOVERY_TAG_PREFIX + previousFlags);
 		player.setInvisible(true);
 		player.setInvulnerable(true);
@@ -213,6 +210,7 @@ public final class RatPossession {
 		player.calculateDimensions();
 		player.teleport((ServerWorld) rat.getWorld(), rat.getX(), rat.getY(), rat.getZ(), rat.getYaw(), rat.getPitch());
 		sendCamera(player, rat.getId(), session);
+		broadcastBodyState(player, session);
 	}
 
 	private static void tick(MinecraftServer server) {
@@ -234,7 +232,12 @@ public final class RatPossession {
 				continue;
 			}
 			player.noClip = player.isSpectator();
-			if (session.slapCooldown > 0) session.slapCooldown--;
+			Vec3d position = player.getPos();
+			double dx = position.x - session.lastRatPosition.x;
+			double dz = position.z - session.lastRatPosition.z;
+			session.rat.setPossessedMoving(dx * dx + dz * dz > 0.0004);
+			session.lastRatPosition = position;
+			session.rat.setPossessedHand(player.getInventory().getStack(0));
 			followPlayer(session.rat, player);
 		}
 	}
@@ -252,6 +255,7 @@ public final class RatPossession {
 
 	private static void end(ServerPlayerEntity player, Session session, boolean kill) {
 		SESSIONS.remove(player.getUuid());
+		broadcastBodyEnd(player);
 		ItemStack ratHand = player.getInventory().removeStack(0);
 		if (!ratHand.isEmpty()) {
 			if (session.rat.isAlive() && session.rat.getMainHandStack().isEmpty())
@@ -261,6 +265,7 @@ public final class RatPossession {
 		restoreBodyInventory(player, session.inventoryBackup);
 		player.getInventory().selectedSlot = session.selectedSlot;
 		RatEntity rat = session.rat;
+		rat.clearPossessedHand();
 		Vec3d destination = session.cursed ? rat.getPos() : session.origin;
 		player.setCameraEntity(player);
 		sendCamera(player, -1, null);
@@ -296,8 +301,44 @@ public final class RatPossession {
 			buf.writeFloat(session.originPitch);
 			buf.writeBoolean(session.cursed);
 			for (ItemStack stack : session.bodyEquipment) buf.writeItemStack(stack);
+			buf.writeNbt(session.bodyTrinkets);
 		}
 		ServerPlayNetworking.send(player, CAMERA_PACKET, buf);
+	}
+
+	private static void broadcastBodyState(ServerPlayerEntity controller, Session session) {
+		for (ServerPlayerEntity observer : controller.getServer().getPlayerManager().getPlayerList()) {
+			if (observer != controller && observer.getWorld() == controller.getWorld())
+				sendBodyState(observer, controller, session);
+		}
+	}
+
+	private static void sendBodyState(ServerPlayerEntity observer, ServerPlayerEntity controller, Session session) {
+		if (!observer.networkHandler.isConnectionOpen()) return;
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeBoolean(true);
+		buf.writeUuid(controller.getUuid());
+		buf.writeString(controller.getGameProfile().getName());
+		buf.writeDouble(session.origin.x);
+		buf.writeDouble(session.origin.y);
+		buf.writeDouble(session.origin.z);
+		buf.writeFloat(session.originYaw);
+		buf.writeFloat(session.originPitch);
+		buf.writeBoolean(session.cursed);
+		for (ItemStack stack : session.bodyEquipment) buf.writeItemStack(stack);
+		buf.writeNbt(session.bodyTrinkets);
+		ServerPlayNetworking.send(observer, BODY_PACKET, buf);
+	}
+
+	private static void broadcastBodyEnd(ServerPlayerEntity controller) {
+		for (ServerPlayerEntity observer : controller.getServer().getPlayerManager().getPlayerList()) {
+			if (observer == controller || observer.getWorld() != controller.getWorld()
+				|| !observer.networkHandler.isConnectionOpen()) continue;
+			PacketByteBuf buf = PacketByteBufs.create();
+			buf.writeBoolean(false);
+			buf.writeUuid(controller.getUuid());
+			ServerPlayNetworking.send(observer, BODY_PACKET, buf);
+		}
 	}
 
 	private static void recoverPlayerState(ServerPlayerEntity player) {
@@ -352,6 +393,26 @@ public final class RatPossession {
 		return stacks;
 	}
 
+	private static NbtCompound captureBodyTrinkets(PlayerEntity player) {
+		NbtList trinkets = new NbtList();
+		TrinketsApi.getTrinketComponent(player).ifPresent(component -> component.getInventory().forEach((group, slots) ->
+			slots.forEach((slot, inventory) -> {
+				for (int index = 0; index < inventory.size(); index++) {
+					ItemStack stack = inventory.getStack(index);
+					if (stack.isEmpty()) continue;
+					NbtCompound entry = new NbtCompound();
+					entry.putString("group", group);
+					entry.putString("slot", slot);
+					entry.putInt("index", index);
+					entry.put("stack", stack.writeNbt(new NbtCompound()));
+					trinkets.add(entry);
+				}
+			})));
+		NbtCompound snapshot = new NbtCompound();
+		snapshot.put("items", trinkets);
+		return snapshot;
+	}
+
 	private static final class Session {
 		final RatEntity rat;
 		final Vec3d origin;
@@ -364,17 +425,19 @@ public final class RatPossession {
 		final int previousFlags;
 		final NbtList inventoryBackup;
 		final ItemStack[] bodyEquipment;
+		final NbtCompound bodyTrinkets;
 		final int selectedSlot;
 		final boolean wasAllowedToFly;
 		final boolean wasFlying;
 		final GameMode startGameMode;
-		int slapCooldown;
+		Vec3d lastRatPosition;
 
 		Session(RatEntity rat, Vec3d origin, float originYaw, float originPitch,
 		        boolean cursed, boolean wasAiDisabled, boolean wasNoGravity,
-		        boolean wasNoClip, int previousFlags, NbtList inventoryBackup, ItemStack[] bodyEquipment,
+		        boolean wasNoClip, int previousFlags, NbtList inventoryBackup, ItemStack[] bodyEquipment, NbtCompound bodyTrinkets,
 		        int selectedSlot, boolean wasAllowedToFly, boolean wasFlying, GameMode startGameMode) {
 			this.rat = rat;
+			this.lastRatPosition = rat.getPos();
 			this.origin = origin;
 			this.originYaw = originYaw;
 			this.originPitch = originPitch;
@@ -385,6 +448,7 @@ public final class RatPossession {
 			this.previousFlags = previousFlags;
 			this.inventoryBackup = inventoryBackup;
 			this.bodyEquipment = bodyEquipment;
+			this.bodyTrinkets = bodyTrinkets;
 			this.selectedSlot = selectedSlot;
 			this.wasAllowedToFly = wasAllowedToFly;
 			this.wasFlying = wasFlying;

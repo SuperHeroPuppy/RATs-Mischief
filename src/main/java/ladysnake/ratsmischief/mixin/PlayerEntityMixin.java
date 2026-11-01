@@ -52,6 +52,19 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerRa
 		if (rat != null) cir.setReturnValue(rat.getEyeHeight(pose));
 	}
 
+	@Inject(method = "handleFallDamage", at = @At("HEAD"), cancellable = true)
+	private void ratsmischief$useRatFallSound(float fallDistance, float damageMultiplier,
+		DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+		PlayerEntity player = (PlayerEntity) (Object) this;
+		RatEntity rat = player.getWorld().isClient
+			? (player instanceof RatPossessionView view ? view.ratsmischief$getControlledRat() : null)
+			: RatPossession.getControlledRat(player);
+		if (rat == null) return;
+		if (!player.getWorld().isClient && !player.getAbilities().allowFlying)
+			rat.handleFallDamage(fallDistance, damageMultiplier, source);
+		cir.setReturnValue(false);
+	}
+
 	@Inject(method = "damageArmor", at = @At("HEAD"), cancellable = true)
 	public void ratsmischef$removeRatArmorDamage(DamageSource source, float amount, CallbackInfo ci) {
 		if (Objects.equals(source.getName(), "rat")) {

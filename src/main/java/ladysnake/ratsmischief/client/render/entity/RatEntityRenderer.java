@@ -52,7 +52,8 @@ public class RatEntityRenderer extends GeoEntityRenderer<RatEntity> {
 		int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
 		if (!isReRender && bone.getName().equals("bodybone")) {
 			ItemStack itemStack = ratEntity.isSitting() || ratEntity.isSneaking()
-				? ItemStack.EMPTY : ratEntity.getEquippedStack(EquipmentSlot.MAINHAND);
+				? ItemStack.EMPTY : ratEntity.isPossessed()
+					? ratEntity.getPossessedHand() : ratEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 			if (RatPossessionClient.getControlledRat() == ratEntity && MinecraftClient.getInstance().player != null)
 				itemStack = MinecraftClient.getInstance().player.getMainHandStack();
 			stack.push();

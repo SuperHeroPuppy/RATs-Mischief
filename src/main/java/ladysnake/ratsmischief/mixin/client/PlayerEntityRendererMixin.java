@@ -36,7 +36,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$renderOnlyBodyShell(AbstractClientPlayerEntity player, float yaw, float tickDelta,
 		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-		if (player == MinecraftClient.getInstance().player && RatPossessionClient.isControllingRat()) ci.cancel();
+		if (!RatPossessionClient.isBodyShellEntity(player)
+			&& ((player == MinecraftClient.getInstance().player && RatPossessionClient.isControllingRat())
+				|| RatPossessionClient.isRemotePossessor(player.getUuid()))) ci.cancel();
 	}
 
 	@Inject(method = "getArmPose", at = @At("HEAD"), cancellable = true)

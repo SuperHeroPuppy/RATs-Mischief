@@ -26,7 +26,6 @@ public abstract class MinecraftClientMixin {
 	}
 	@Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
 	private void ratsmischief$attackActions(CallbackInfoReturnable<Boolean> cir) {
-		RatPossessionClient.requestSlap();
 		MinecraftClient client = (MinecraftClient) (Object) this;
 		if (!RatPossessionClient.isControllingRat() && client.player != null
 			&& client.player.getMainHandStack().getItem() instanceof RatMasterOcarinaItem) {

@@ -147,6 +147,10 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
 		this.initEquipment(this.random, difficulty);
+		int goldChance = RatsMischiefUtils.IS_WORLD_RAT_DAY ? 30 : 150;
+		if (this.random.nextInt(goldChance) == 0) this.setRatType(Type.GOLD);
+		this.setRatColor(DyeColor.values()[this.random.nextInt(DyeColor.values().length)]);
+		this.setPartyHat(PARTY_HATS.get(this.random.nextInt(PARTY_HATS.size())).name());
 
 		// init doctor4t type or random type on birthday
 		if (RatsMischiefUtils.IS_RAT_BIRTHDAY && this.getRandom().nextInt(10) == 0) {
@@ -174,22 +178,13 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 	protected void initDataTracker() {
 		super.initDataTracker();
 
-		int bound = 150;
-		if (RatsMischiefUtils.IS_WORLD_RAT_DAY) {
-			bound = 30;
-		}
-
-		if (this.random.nextInt(bound) == 0) {
-			this.dataTracker.startTracking(TYPE, Type.GOLD.toString());
-		} else {
-			this.dataTracker.startTracking(TYPE, Type.WILD.toString());
-		}
+		this.dataTracker.startTracking(TYPE, Type.WILD.toString());
 
 		this.dataTracker.startTracking(ANGER_TIME, 0);
 		this.dataTracker.startTracking(SITTING, false);
 		this.dataTracker.startTracking(EATING, false);
 		this.dataTracker.startTracking(SNIFFING, false);
-		this.dataTracker.startTracking(COLOR, DyeColor.values()[(this.random.nextInt(DyeColor.values().length))].getName());
+		this.dataTracker.startTracking(COLOR, DyeColor.WHITE.getName());
 		this.dataTracker.startTracking(FLYING, false);
 		this.dataTracker.startTracking(SPY, false);
 		this.dataTracker.startTracking(AROUSED, false);
@@ -200,7 +195,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 		this.dataTracker.startTracking(POSSESSED_MOVING, false);
 		this.dataTracker.startTracking(POSSESSED_HAND, ItemStack.EMPTY);
 
-		this.dataTracker.startTracking(PARTY_HAT, PARTY_HATS.get(this.random.nextInt(PARTY_HATS.size())).toString());
+		this.dataTracker.startTracking(PARTY_HAT, PartyHat.BLUE.name());
 	}
 
 	@Override

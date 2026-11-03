@@ -55,13 +55,12 @@ public class RatEntityModel extends GeoModel<RatEntity> {
 			}
 		}
 
-		if (ratEntity.isBaby()) {
-			CoreGeoBone root = this.getAnimationProcessor().getBone("root");
-			if (root != null) {
-				root.setScaleX(0.5f);
-				root.setScaleY(0.5f);
-				root.setScaleZ(0.5f);
-			}
+		CoreGeoBone root = this.getAnimationProcessor().getBone("root");
+		if (root != null) {
+			float scale = ratEntity.isBaby() ? 0.5f : 1.0f;
+			root.setScaleX(scale);
+			root.setScaleY(scale);
+			root.setScaleZ(scale);
 		}
 	}
 }

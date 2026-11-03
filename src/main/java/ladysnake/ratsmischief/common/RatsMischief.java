@@ -2,6 +2,9 @@ package ladysnake.ratsmischief.common;
 
 import ladysnake.ratsmischief.client.render.item.recipe.SpyRatCraftingRecipe;
 import ladysnake.ratsmischief.common.recipe.LoyaltyPouchCraftingRecipe;
+import ladysnake.ratsmischief.common.recipe.UnbindLoyaltyPouchCraftingRecipe;
+import ladysnake.ratsmischief.common.command.RatCommand;
+import ladysnake.ratsmischief.common.item.RatPickup;
 import ladysnake.ratsmischief.common.init.*;
 import ladysnake.ratsmischief.common.world.RatSpawner;
 import ladysnake.ratsmischief.common.possession.RatPossession;
@@ -37,6 +40,9 @@ public class RatsMischief implements ModInitializer {
 	public static final SpecialRecipeSerializer<LoyaltyPouchCraftingRecipe> LOYALTY_POUCH_RECIPE = RecipeSerializer.register(
 		"ratsmischief:crafting_special_loyalty_pouch", new SpecialRecipeSerializer<>(LoyaltyPouchCraftingRecipe::new)
 	);
+	public static final SpecialRecipeSerializer<UnbindLoyaltyPouchCraftingRecipe> UNBIND_LOYALTY_POUCH_RECIPE = RecipeSerializer.register(
+		"ratsmischief:crafting_special_unbind_loyalty_pouch", new SpecialRecipeSerializer<>(UnbindLoyaltyPouchCraftingRecipe::new)
+	);
 	public static final Identifier ANCIENT_CITY_CHESTS = new Identifier("minecraft", "chests/ancient_city");
 	public static final Identifier BASTION_TREASURE_CHESTS = new Identifier("minecraft", "chests/bastion_treasure");
 	public static final Identifier BASTION_OTHER_CHESTS = new Identifier("minecraft", "chests/bastion_other");
@@ -52,6 +58,8 @@ public class RatsMischief implements ModInitializer {
 	public void onInitialize() {
 		GeckoLib.initialize();
 		RatPossession.initialize();
+		RatPickup.initialize();
+		RatCommand.initialize();
 		RatMasterOcarinaItem.initializeNetworking();
 
 		// initializing stuff

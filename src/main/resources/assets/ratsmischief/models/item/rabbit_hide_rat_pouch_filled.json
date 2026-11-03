@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "ratsmischief:item/rabbit_hide_rat_pouch_filled"}
+}

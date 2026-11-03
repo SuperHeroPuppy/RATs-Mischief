@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "ratsmischief:item/used_loyalty_of_the_mischief"}
+}

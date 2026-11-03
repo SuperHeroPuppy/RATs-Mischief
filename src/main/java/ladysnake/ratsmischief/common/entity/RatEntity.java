@@ -775,10 +775,11 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 			ratItemStack.setCustomName(this.getCustomName());
 		}
 
-		if (this.getSlot() >= 0 && player.getInventory().getStack(this.getSlot()).isEmpty()) {
+		if (this.getSlot() >= 0 && this.getSlot() < player.getInventory().size()
+			&& player.getInventory().getStack(this.getSlot()).isEmpty()) {
 			player.getInventory().setStack(this.getSlot(), ratItemStack);
-		} else {
-			player.giveItemStack(ratItemStack);
+		} else if (!player.getInventory().insertStack(ratItemStack)) {
+			player.dropItem(ratItemStack, false);
 		}
 
 		this.discard();

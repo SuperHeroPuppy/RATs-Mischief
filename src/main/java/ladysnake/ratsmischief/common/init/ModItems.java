@@ -25,6 +25,7 @@ public interface ModItems {
 	Item RAT = createItem("rat", new RatItem(new FabricItemSettings().maxCount(1)));
 	Item RAT_SPAWN_EGG = createItem("rat_spawn_egg", new SpawnEggItem(ModEntities.RAT, 0x2E1C1C, 0x241317, new FabricItemSettings()));
 
+	Item RABBIT_HIDE_RAT_POUCH = createItem("rabbit_hide_rat_pouch", new RatPouchItem(new FabricItemSettings().maxCount(1), 1));
 	Item LEATHER_RAT_POUCH = createItem("leather_rat_pouch", new RatPouchItem(new FabricItemSettings().maxCount(1), 5));
 	Item TWISTED_RAT_POUCH = createItem("twisted_rat_pouch", new RatPouchItem(new FabricItemSettings().maxCount(1), 10));
 	Item PURPUR_RAT_POUCH = createItem("purpur_rat_pouch", new RatPouchItem(new FabricItemSettings().maxCount(1), 15));
@@ -36,7 +37,8 @@ public interface ModItems {
 	Item UNCLOTHED_CONTRACTED_INGOT = createItem("unclothed_contracted_ingot", new Item(new FabricItemSettings()));
 	Item RAT_MASTER_CLOTH = createItem("rat_master_cloth", new Item(new FabricItemSettings()));
 	Item RAT_BELLICIST_CLOTH = createItem("rat_bellicist_cloth", new Item(new FabricItemSettings()));
-	Item LOYALTY_OF_THE_MISCHIEF = createItem("loyalty_of_the_mischief", new Item(new FabricItemSettings().maxCount(1)));
+	Item USED_LOYALTY_OF_THE_MISCHIEF = createItem("used_loyalty_of_the_mischief", new Item(new FabricItemSettings().maxCount(1)));
+	Item LOYALTY_OF_THE_MISCHIEF = createItem("loyalty_of_the_mischief", new Item(new FabricItemSettings().maxCount(1).recipeRemainder(USED_LOYALTY_OF_THE_MISCHIEF)));
 	Item RAT_MASTER_SMITHING_TEMPLATE = createItem("rat_master_smithing_template", new SmithingTemplateItem(
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.applies_to"),
 		Text.translatable("item.ratsmischief.rat_master_smithing_template.ingredients"),

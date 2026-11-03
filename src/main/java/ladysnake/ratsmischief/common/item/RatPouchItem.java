@@ -98,6 +98,29 @@ public class RatPouchItem extends Item {
 		return output;
 	}
 
+	public static boolean isFullBound(ItemStack stack) {
+		if (!isBound(stack)) return false;
+		NbtCompound data = stack.getSubNbt(RatsMischief.MOD_ID);
+		return data.getList("rats", NbtElement.COMPOUND_TYPE).size()
+			== data.getList(LOYALTY_ROSTER, NbtElement.COMPOUND_TYPE).size();
+	}
+
+	public static ItemStack unbindFullPouch(ItemStack input) {
+		if (!isFullBound(input)) return ItemStack.EMPTY;
+		ItemStack output = input.copy();
+		output.setCount(1);
+		NbtCompound data = output.getOrCreateSubNbt(RatsMischief.MOD_ID);
+		NbtList rats = data.getList("rats", NbtElement.COMPOUND_TYPE);
+		for (NbtElement element : rats) {
+			NbtCompound rat = (NbtCompound) element;
+			rat.remove(LOYALTY_POUCH_ID);
+			rat.remove(LOYALTY_SLOT);
+		}
+		data.remove(LOYALTY_POUCH_ID);
+		data.remove(LOYALTY_ROSTER);
+		return output;
+	}
+
 	public static boolean isBoundRat(NbtCompound rat) {
 		return rat.containsUuid("UUID") && rat.containsUuid(LOYALTY_POUCH_ID)
 			&& rat.contains(LOYALTY_SLOT, NbtElement.INT_TYPE) && rat.getInt(LOYALTY_SLOT) >= 0;
@@ -147,6 +170,19 @@ public class RatPouchItem extends Item {
 
 	public static boolean tryStoreReturnedRat(ItemStack pouch, NbtCompound rat) {
 		return isBound(pouch) && storeRat(pouch, rat, true);
+	}
+
+	public static boolean captureRat(ItemStack pouch, PlayerEntity player, RatEntity rat) {
+		if (player.getWorld().isClient || rat.isRemoved() || !rat.isAlive()) return false;
+		if (isBound(pouch) ? !rat.hasLoyaltyPouchId(pouch)
+			: !rat.isOwner(player) || rat.isLoyaltyBound()) return false;
+		NbtCompound tag = new NbtCompound();
+		if (!rat.saveSelfNbt(tag) || !storeRat(pouch, tag, false)) return false;
+		player.getInventory().markDirty();
+		player.currentScreenHandler.sendContentUpdates();
+		rat.playSpawnEffects();
+		rat.remove(Entity.RemovalReason.DISCARDED);
+		return true;
 	}
 
 	@Override
@@ -206,11 +242,7 @@ public class RatPouchItem extends Item {
 
 				int gathered = 0;
 				for (RatEntity rat : closestOwnedRats) {
-					NbtCompound nbt = new NbtCompound();
-					rat.saveSelfNbt(nbt);
-					if (storeRat(stack, nbt, false)) {
-						rat.playSpawnEffects();
-						rat.remove(Entity.RemovalReason.DISCARDED);
+					if (captureRat(stack, user, rat)) {
 						gathered++;
 					}
 				}
@@ -226,11 +258,7 @@ public class RatPouchItem extends Item {
 			rat -> rat.isTamed() && rat.isLoyaltyBound() && rat.hasLoyaltyPouchId(stack));
 		int gathered = 0;
 		for (RatEntity rat : nearby) {
-			NbtCompound tag = new NbtCompound();
-				rat.saveSelfNbt(tag);
-			if (storeRat(stack, tag, false)) {
-				rat.playSpawnEffects();
-				rat.remove(Entity.RemovalReason.DISCARDED);
+			if (captureRat(stack, user, rat)) {
 				gathered++;
 			}
 		}
@@ -260,23 +288,9 @@ public class RatPouchItem extends Item {
 
 	@Override
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		NbtList NbtList = user.getStackInHand(hand).getOrCreateSubNbt(RatsMischief.MOD_ID).getList("rats", NbtType.COMPOUND);
-
-		if (NbtList.size() < this.size && entity instanceof RatEntity rat
-			&& (isBound(stack) ? rat.hasLoyaltyPouchId(stack)
-				: rat.getOwnerUuid() != null && rat.getOwnerUuid().equals(user.getUuid()) && !rat.isLoyaltyBound())) {
-			NbtCompound NbtCompound = new NbtCompound();
-			entity.saveSelfNbt(NbtCompound);
-			if (!acceptsRat(stack, NbtCompound)) return ActionResult.FAIL;
-			if (user.getWorld().isClient) return ActionResult.SUCCESS;
-			if (!storeRat(stack, NbtCompound, false)) return ActionResult.FAIL;
-			((RatEntity) entity).playSpawnEffects();
-			entity.remove(Entity.RemovalReason.DISCARDED);
-
-			return ActionResult.SUCCESS;
-		} else {
-			return ActionResult.PASS;
-		}
+		if (!(entity instanceof RatEntity rat)) return ActionResult.PASS;
+		if (user.getWorld().isClient) return ActionResult.SUCCESS;
+		return captureRat(stack, user, rat) ? ActionResult.SUCCESS : ActionResult.FAIL;
 	}
 
 	@Override

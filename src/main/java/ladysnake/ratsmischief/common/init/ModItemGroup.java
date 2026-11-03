@@ -20,6 +20,7 @@ public final class ModItemGroup {
 			.icon(() -> icon)
 			.entries((context, entries) -> {
 				entries.add(ModItems.RAT_SPAWN_EGG);
+				addPouch(entries, (RatPouchItem) ModItems.RABBIT_HIDE_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.LEATHER_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.TWISTED_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.PURPUR_RAT_POUCH);
@@ -31,6 +32,7 @@ public final class ModItemGroup {
 				entries.add(ModItems.RAT_MASTER_CLOTH);
 				entries.add(ModItems.RAT_BELLICIST_CLOTH);
 				entries.add(ModItems.LOYALTY_OF_THE_MISCHIEF);
+				entries.add(ModItems.USED_LOYALTY_OF_THE_MISCHIEF);
 				entries.add(ModItems.RAT_MASTER_SMITHING_TEMPLATE);
 				entries.add(ModItems.RAT_BELLICIST_SMITHING_TEMPLATE);
 				entries.add(ModItems.RAT_MASTER_HOOD);

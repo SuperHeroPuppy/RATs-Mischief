@@ -138,6 +138,9 @@ public class RatItem extends Item implements GeoItem {
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		if (user.getItemCooldownManager().isCoolingDown(this)) {
+			return TypedActionResult.fail(user.getStackInHand(hand));
+		}
 		if (!world.isClient()) {
 			RatEntity rat = this.getRatFromItem(world, user.getStackInHand(hand), new Vec3d(user.getX(), user.getEyeY() - 0.10000000149011612D, user.getZ()),
 				hand == Hand.OFF_HAND ? PlayerInventory.OFF_HAND_SLOT : user.getInventory().getSlotWithStack(user.getStackInHand(hand)));
@@ -160,6 +163,7 @@ public class RatItem extends Item implements GeoItem {
 		}
 		Hand hand = context.getHand();
 		World world = context.getWorld();
+		if (owner.getItemCooldownManager().isCoolingDown(this)) return ActionResult.FAIL;
 		if (!world.isClient()) {
 			RatEntity rat = this.getRatFromItem(world, owner.getStackInHand(hand), context.getHitPos(),
 				hand == Hand.OFF_HAND ? PlayerInventory.OFF_HAND_SLOT : owner.getInventory().getSlotWithStack(owner.getStackInHand(hand)));

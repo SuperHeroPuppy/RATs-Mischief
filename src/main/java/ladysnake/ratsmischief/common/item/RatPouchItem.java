@@ -180,6 +180,7 @@ public class RatPouchItem extends Item {
 		if (!rat.saveSelfNbt(tag) || !storeRat(pouch, tag, false)) return false;
 		player.getInventory().markDirty();
 		player.currentScreenHandler.sendContentUpdates();
+		player.getItemCooldownManager().set(pouch.getItem(), 10);
 		rat.playSpawnEffects();
 		rat.remove(Entity.RemovalReason.DISCARDED);
 		return true;
@@ -220,22 +221,34 @@ public class RatPouchItem extends Item {
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		if (user.getItemCooldownManager().isCoolingDown(this)) {
+			return TypedActionResult.fail(user.getStackInHand(hand));
+		}
 		if (!world.isClient() && user.isSneaking()) {
 			ItemStack stack = user.getStackInHand(hand);
 			if (isBound(stack)) return useBoundPouch(world, user, stack);
-			if (user.getStackInHand(hand).getOrCreateSubNbt(RatsMischief.MOD_ID).getFloat("filled") == 1f) {
-				for (NbtElement ratTag : user.getStackInHand(hand).getOrCreateSubNbt(RatsMischief.MOD_ID).getList("rats", NbtType.COMPOUND)) {
+			NbtCompound data = stack.getOrCreateSubNbt(RatsMischief.MOD_ID);
+			if (data.getFloat("filled") == 1f) {
+				NbtList remaining = new NbtList();
+				int released = 0;
+				for (NbtElement ratTag : data.getList("rats", NbtType.COMPOUND)) {
 					RatEntity rat = ModEntities.RAT.create(world);
+					if (rat == null) {
+						remaining.add(ratTag.copy());
+						continue;
+					}
 					rat.readNbt((NbtCompound) ratTag);
+					if (!rat.isTamed() || rat.getOwnerUuid() == null) rat.setOwner(user);
 					rat.updatePosition(user.getX(), user.getY(), user.getZ());
 					rat.setPos(user.getX(), user.getY(), user.getZ());
-					world.spawnEntity(rat);
+					if (world.spawnEntity(rat)) released++;
+					else remaining.add(ratTag.copy());
 				}
 
-				user.getStackInHand(hand).getOrCreateSubNbt(RatsMischief.MOD_ID).put("rats", new NbtList());
-				user.getStackInHand(hand).getOrCreateSubNbt(RatsMischief.MOD_ID).putFloat("filled", 0F);
+				data.put("rats", remaining);
+				data.putFloat("filled", remaining.isEmpty() ? 0F : 1F);
 
-				return TypedActionResult.success(user.getStackInHand(hand));
+				return released > 0 ? TypedActionResult.success(stack) : TypedActionResult.fail(stack);
 			} else {
 				List<RatEntity> closestTamedRats = world.getEntitiesByClass(RatEntity.class, user.getBoundingBox().expand(16.0D), CLOSEST_RAT_PREDICATE);
 				List<RatEntity> closestOwnedRats = closestTamedRats.stream().filter(ratEntity -> ratEntity.getOwnerUuid() != null && ratEntity.getOwnerUuid().equals(user.getUuid()) && !ratEntity.isLoyaltyBound()).collect(Collectors.toList());

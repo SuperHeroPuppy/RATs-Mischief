@@ -781,6 +781,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 		} else if (!player.getInventory().insertStack(ratItemStack)) {
 			player.dropItem(ratItemStack, false);
 		}
+		player.getItemCooldownManager().set(ModItems.RAT, 10);
 
 		this.discard();
 	}

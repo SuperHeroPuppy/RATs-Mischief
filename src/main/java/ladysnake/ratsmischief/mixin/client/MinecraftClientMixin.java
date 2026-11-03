@@ -35,6 +35,7 @@ public abstract class MinecraftClientMixin {
 		buffer.writeVarInt(rat.getId());
 		buffer.writeBoolean(hand == Hand.OFF_HAND);
 		ClientPlayNetworking.send(RatPickup.PICKUP_PACKET, buffer);
+		client.player.swingHand(hand);
 		ci.cancel();
 	}
 	@Inject(method = "handleInputEvents", at = @At("HEAD"))

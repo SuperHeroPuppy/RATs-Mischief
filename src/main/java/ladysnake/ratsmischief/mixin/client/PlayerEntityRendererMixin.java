@@ -56,7 +56,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void ratsmischief$addHorns(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
-		this.addFeature(new GildedHornsFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
+		this.addFeature(new GildedHornsFeatureRenderer<>(this));
 	}
 
 	@Inject(method = "setModelPose", at = @At(value = "TAIL"))

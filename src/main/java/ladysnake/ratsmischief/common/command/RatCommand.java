@@ -10,6 +10,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -39,6 +40,7 @@ public final class RatCommand {
 			return 0;
 		}
 		rat.turnRatIntoItemAndGive(player);
+		player.swingHand(Hand.MAIN_HAND);
 		source.sendFeedback(() -> Text.literal("Picked up rat."), false);
 		return 1;
 	}

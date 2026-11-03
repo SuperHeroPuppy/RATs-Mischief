@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "ratsmischief:rat_master_block",
+    "ratsmischief:rat_master_bricks",
+    "ratsmischief:rat_master_tiles",
+    "ratsmischief:rat_master_pillar"
+  ]
+}

@@ -26,6 +26,10 @@ public final class ModItemGroup {
 				addPouch(entries, (RatPouchItem) ModItems.PURPUR_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.RAT_MASTER_POUCH);
 				entries.add(ModItems.CLOTHED_INGOT);
+				entries.add(ModBlocks.RAT_MASTER_BLOCK);
+				entries.add(ModBlocks.RAT_MASTER_BRICKS);
+				entries.add(ModBlocks.RAT_MASTER_TILES);
+				entries.add(ModBlocks.RAT_MASTER_PILLAR);
 				entries.add(ModItems.CONTRACTED_INGOT);
 				entries.add(ModItems.UNCLOTHED_INGOT);
 				entries.add(ModItems.UNCLOTHED_CONTRACTED_INGOT);

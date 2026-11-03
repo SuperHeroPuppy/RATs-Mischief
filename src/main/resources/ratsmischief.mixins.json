@@ -4,9 +4,11 @@
   "package": "ladysnake.ratsmischief.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ArmorStandEntityMixin",
     "CatEntityMixin",
     "EnchantmentHelperMixin",
     "EntityMixin",
+    "MonsterTargetMixin",
     "ItemEntityMixin",
     "LivingEntityMixin",
     "PlayerEntityMixin",

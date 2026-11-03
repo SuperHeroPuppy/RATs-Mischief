@@ -11,6 +11,9 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -56,6 +59,44 @@ public final class RatPossession {
 	public static boolean isControlledRat(RatEntity rat) {
 		if (rat.getWorld().isClient) return false;
 		return SESSIONS.values().stream().anyMatch(session -> session.rat == rat);
+	}
+
+	public static boolean isPossessionBody(ArmorStandEntity stand) {
+		if (stand.getWorld().isClient) return false;
+		return SESSIONS.values().stream().anyMatch(session -> session.body == stand);
+	}
+
+	public static boolean canHostilesTargetBody(ArmorStandEntity stand) {
+		if (stand.getWorld().isClient) return false;
+		for (Map.Entry<UUID, Session> entry : SESSIONS.entrySet()) {
+			if (entry.getValue().body == stand) return isSurvivalTarget(stand.getServer(), entry.getKey());
+		}
+		return false;
+	}
+
+	public static boolean canHostilesTargetRat(RatEntity rat) {
+		if (rat.getWorld().isClient) return false;
+		for (Map.Entry<UUID, Session> entry : SESSIONS.entrySet()) {
+			if (entry.getValue().rat == rat) return isSurvivalTarget(rat.getServer(), entry.getKey());
+		}
+		return true;
+	}
+
+	private static boolean isSurvivalTarget(MinecraftServer server, UUID playerId) {
+		ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerId);
+		return player != null && !player.isCreative() && !player.isSpectator();
+	}
+
+	public static boolean onBodyAttacked(ArmorStandEntity stand, DamageSource source) {
+		if (stand.getWorld().isClient || (source.getAttacker() == null && source.getSource() == null)) return false;
+		for (Map.Entry<UUID, Session> entry : new ArrayList<>(SESSIONS.entrySet())) {
+			Session session = entry.getValue();
+			if (session.body != stand) continue;
+			ServerPlayerEntity player = stand.getServer().getPlayerManager().getPlayer(entry.getKey());
+			if (player != null) end(player, session, false);
+			return true;
+		}
+		return false;
 	}
 
 	public static void writeBodyInventory(PlayerEntity player, NbtCompound nbt) {
@@ -166,6 +207,14 @@ public final class RatPossession {
 			player.getInventory().selectedSlot, player.getAbilities().allowFlying,
 			player.getAbilities().flying, player.interactionManager.getGameMode());
 		SESSIONS.put(player.getUuid(), session);
+		if (!cursed) {
+			ArmorStandEntity body = new ArmorStandEntity(player.getWorld(), session.origin.x, session.origin.y, session.origin.z);
+			body.setInvisible(true);
+			body.setSilent(true);
+			body.setNoGravity(false);
+			body.setYaw(session.originYaw);
+			if (player.getWorld().spawnEntity(body)) session.body = body;
+		}
 		rat.addCommandTag(HOST_RECOVERY_TAG_PREFIX + ((session.wasAiDisabled ? 1 : 0)
 			+ (session.wasNoGravity ? 2 : 0) + (session.wasNoClip ? 4 : 0)));
 		for (int i = 0; i < player.getInventory().size(); i++)
@@ -193,6 +242,10 @@ public final class RatPossession {
 		player.addCommandTag(RECOVERY_TAG_PREFIX + previousFlags);
 		player.setInvisible(true);
 		player.setInvulnerable(true);
+		for (HostileEntity hostile : player.getWorld().getEntitiesByClass(HostileEntity.class,
+			player.getBoundingBox().expand(32), mob -> mob.getTarget() == player)) {
+			hostile.setTarget(null);
+		}
 		player.setNoGravity(false);
 		player.noClip = player.isSpectator();
 		player.setVelocity(Vec3d.ZERO);
@@ -218,6 +271,7 @@ public final class RatPossession {
 			ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
 			Session session = entry.getValue();
 			if (player == null) {
+				if (session.body != null) session.body.discard();
 				session.rat.setAiDisabled(session.wasAiDisabled);
 				session.rat.setNoGravity(session.wasNoGravity);
 				session.rat.noClip = session.wasNoClip;
@@ -226,7 +280,8 @@ public final class RatPossession {
 				SESSIONS.remove(entry.getKey());
 				continue;
 			}
-			if (!session.rat.isAlive() || (session.cursed && !player.hasStatusEffect(ModStatusEffects.RAT_CURSE))) {
+			if (!session.rat.isAlive() || (!session.cursed && (session.body == null || !session.body.isAlive()))
+				|| (session.cursed && !player.hasStatusEffect(ModStatusEffects.RAT_CURSE))) {
 				boolean kill = session.cursed && !session.rat.isAlive();
 				end(player, session, kill);
 				continue;
@@ -266,7 +321,9 @@ public final class RatPossession {
 		player.getInventory().selectedSlot = session.selectedSlot;
 		RatEntity rat = session.rat;
 		rat.clearPossessedHand();
-		Vec3d destination = session.cursed ? rat.getPos() : session.origin;
+		Vec3d destination = session.cursed ? rat.getPos()
+			: session.body != null && session.body.isAlive() ? session.body.getPos() : session.origin;
+		if (session.body != null) session.body.discard();
 		player.setCameraEntity(player);
 		sendCamera(player, -1, null);
 		player.removeScoreboardTag(RECOVERY_TAG_PREFIX + session.previousFlags);
@@ -415,6 +472,7 @@ public final class RatPossession {
 
 	private static final class Session {
 		final RatEntity rat;
+		ArmorStandEntity body;
 		final Vec3d origin;
 		final float originYaw;
 		final float originPitch;

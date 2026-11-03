@@ -21,7 +21,6 @@ import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
@@ -47,19 +46,16 @@ public class RatsMischiefClient implements ClientModInitializer {
 
 		EntityRendererRegistry.register(ModEntities.RAT, RatEntityRenderer::new);
 		ArmorRenderer.register(new RatArmorRenderer(),
-			ModItems.RAT_MASTER_HOOD, ModItems.RAT_MASTER_CLOAK, ModItems.RAT_MASTER_BREECHES, ModItems.RAT_MASTER_GREAVES,
-			ModItems.RAT_BELLICIST_HOOD, ModItems.RAT_BELLICIST_CLOAK, ModItems.RAT_BELLICIST_BREECHES, ModItems.RAT_BELLICIST_GREAVES);
+			ModItems.RAT_MASTER_HOOD, ModItems.RAT_MASTER_CLOAK, ModItems.RAT_MASTER_BREECHES, ModItems.RAT_MASTER_GREAVES);
 
-		for (Item item : new Item[]{ModItems.RAT_MASTER_MASK, ModItems.RAT_BELLICIST_HORNS}) {
-			Identifier itemId = Registries.ITEM.getId(item);
-			RatMasterMaskItemRenderer itemRenderer = new RatMasterMaskItemRenderer(itemId);
-			ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(itemRenderer);
-			BuiltinItemRendererRegistry.INSTANCE.register(item, itemRenderer);
-			ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-				out.accept(new ModelIdentifier(itemId, "inventory"));
-				out.accept(new ModelIdentifier(new Identifier(itemId.getNamespace(), itemId.getPath() + "_worn"), "inventory"));
-			});
-		}
+		Identifier maskId = Registries.ITEM.getId(ModItems.RAT_MASTER_MASK);
+		RatMasterMaskItemRenderer maskRenderer = new RatMasterMaskItemRenderer(maskId);
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(maskRenderer);
+		BuiltinItemRendererRegistry.INSTANCE.register(ModItems.RAT_MASTER_MASK, maskRenderer);
+		ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
+			out.accept(new ModelIdentifier(maskId, "inventory"));
+			out.accept(new ModelIdentifier(new Identifier(maskId.getNamespace(), maskId.getPath() + "_worn"), "inventory"));
+		});
 
 		// model predicates
 		FabricModelPredicateProviderRegistry.register(new Identifier(RatsMischief.MOD_ID + ":filled"), (itemStack, world, livingEntity, seed) -> itemStack.getOrCreateSubNbt(RatsMischief.MOD_ID).getFloat("filled"));

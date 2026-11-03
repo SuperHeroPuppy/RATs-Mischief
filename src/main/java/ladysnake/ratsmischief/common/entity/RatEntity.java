@@ -16,7 +16,6 @@ import ladysnake.ratsmischief.common.item.RatMasterOcarinaItem;
 import ladysnake.ratsmischief.common.item.RatPouchItem;
 import ladysnake.ratsmischief.common.possession.RatPossession;
 import ladysnake.ratsmischief.common.util.PlayerRatOwner;
-import ladysnake.ratsmischief.common.world.LoyaltyRatReturns;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -117,9 +116,6 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 	public Goal action;
 	public int actionTimer = 0;
 	private UUID targetUuid;
-	@Nullable
-	private UUID loyaltyPouchId;
-	private int loyaltySlot = -1;
 	private boolean shouldReturnToPlayerInventory = false;
 
 	public RatEntity(EntityType<? extends TameableEntity> type, World worldIn) {
@@ -349,23 +345,9 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 		this.dataTracker.set(SLOT, slot);
 	}
 
-	public boolean isLoyaltyBound() {
-		return this.loyaltyPouchId != null && this.loyaltySlot >= 0;
-	}
-
-	public boolean hasLoyaltyPouchId(ItemStack pouch) {
-		NbtCompound data = pouch.getSubNbt(RatsMischief.MOD_ID);
-		return this.isLoyaltyBound() && data != null && data.containsUuid(RatPouchItem.LOYALTY_POUCH_ID)
-			&& this.loyaltyPouchId.equals(data.getUuid(RatPouchItem.LOYALTY_POUCH_ID));
-	}
-
 	@Override
 	public void readCustomDataFromNbt(NbtCompound tag) {
 		super.readCustomDataFromNbt(tag);
-		this.loyaltyPouchId = tag.containsUuid(RatPouchItem.LOYALTY_POUCH_ID)
-			? tag.getUuid(RatPouchItem.LOYALTY_POUCH_ID) : null;
-		this.loyaltySlot = tag.contains(RatPouchItem.LOYALTY_SLOT, net.minecraft.nbt.NbtElement.INT_TYPE)
-			? tag.getInt(RatPouchItem.LOYALTY_SLOT) : -1;
 
 		if (tag.contains("RatType")) {
 			this.setRatType(Type.valueOf(tag.getString("RatType")));
@@ -418,10 +400,6 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound tag) {
 		super.writeCustomDataToNbt(tag);
-		if (this.isLoyaltyBound()) {
-			tag.putUuid(RatPouchItem.LOYALTY_POUCH_ID, this.loyaltyPouchId);
-			tag.putInt(RatPouchItem.LOYALTY_SLOT, this.loyaltySlot);
-		}
 
 		tag.putString("RatType", this.getRatType().toString());
 		tag.putBoolean("ShouldReturnToOwnerInventory", this.shouldReturnToOwnerInventory());
@@ -1056,20 +1034,6 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 
 	@Override
 	public void onDeath(DamageSource source) {
-		if (this.isLoyaltyBound() && this.getWorld() instanceof ServerWorld serverWorld) {
-			ItemStack held = this.getMainHandStack().copy();
-			if (!held.isEmpty()) {
-				this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-				this.dropStack(held);
-			}
-			NbtCompound ratNbt = new NbtCompound();
-			this.saveSelfNbt(ratNbt);
-			ratNbt.putFloat("Health", this.getMaxHealth());
-			if (LoyaltyRatReturns.get(serverWorld.getServer()).returnRat(serverWorld.getServer(), ratNbt)) {
-				this.discard();
-				return;
-			}
-		}
 		if (this.isTamed()) {
 			this.dropStack(this.getMainHandStack());
 		}

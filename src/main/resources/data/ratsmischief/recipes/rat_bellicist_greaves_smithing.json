@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "template": { "item": "ratsmischief:rat_bellicist_smithing_template" },
-  "base": { "item": "ratsmischief:rat_master_greaves" },
-  "addition": { "item": "ratsmischief:contracted_ingot" },
-  "result": { "item": "ratsmischief:rat_bellicist_greaves" }
-}

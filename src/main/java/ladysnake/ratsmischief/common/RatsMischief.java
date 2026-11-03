@@ -1,8 +1,6 @@
 package ladysnake.ratsmischief.common;
 
 import ladysnake.ratsmischief.client.render.item.recipe.SpyRatCraftingRecipe;
-import ladysnake.ratsmischief.common.recipe.LoyaltyPouchCraftingRecipe;
-import ladysnake.ratsmischief.common.recipe.UnbindLoyaltyPouchCraftingRecipe;
 import ladysnake.ratsmischief.common.command.RatCommand;
 import ladysnake.ratsmischief.common.item.RatPickup;
 import ladysnake.ratsmischief.common.init.*;
@@ -37,18 +35,7 @@ public class RatsMischief implements ModInitializer {
 	public static final SpecialRecipeSerializer<SpyRatCraftingRecipe> SPY_RAT_RECIPE = RecipeSerializer.register(
 		"ratsmischief:crafting_special_spy_rat", new SpecialRecipeSerializer<>(SpyRatCraftingRecipe::new)
 	);
-	public static final SpecialRecipeSerializer<LoyaltyPouchCraftingRecipe> LOYALTY_POUCH_RECIPE = RecipeSerializer.register(
-		"ratsmischief:crafting_special_loyalty_pouch", new SpecialRecipeSerializer<>(LoyaltyPouchCraftingRecipe::new)
-	);
-	public static final SpecialRecipeSerializer<UnbindLoyaltyPouchCraftingRecipe> UNBIND_LOYALTY_POUCH_RECIPE = RecipeSerializer.register(
-		"ratsmischief:crafting_special_unbind_loyalty_pouch", new SpecialRecipeSerializer<>(UnbindLoyaltyPouchCraftingRecipe::new)
-	);
 	public static final Identifier ANCIENT_CITY_CHESTS = new Identifier("minecraft", "chests/ancient_city");
-	public static final Identifier BASTION_TREASURE_CHESTS = new Identifier("minecraft", "chests/bastion_treasure");
-	public static final Identifier BASTION_OTHER_CHESTS = new Identifier("minecraft", "chests/bastion_other");
-	public static final Identifier BASTION_BRIDGE_CHESTS = new Identifier("minecraft", "chests/bastion_bridge");
-	public static final Identifier BASTION_HOGLIN_STABLE_CHESTS = new Identifier("minecraft", "chests/bastion_hoglin_stable");
-	public static final Identifier END_CITY_TREASURE_CHESTS = new Identifier("minecraft", "chests/end_city_treasure");
 
 	public static Identifier id(String path) {
 		return new Identifier(MOD_ID, path);
@@ -82,12 +69,11 @@ public class RatsMischief implements ModInitializer {
 		// rat kid painting
 		Registry.register(Registries.PAINTING_VARIANT, new Identifier(MOD_ID, "a_rat_in_time"), new PaintingVariant(64, 48));
 
-		// Rat Master components in Ancient Cities; Bellicist components in Bastions.
+		// Rat Master ingots in Ancient Cities.
 		UniformLootNumberProvider lootTableRange = UniformLootNumberProvider.create(1, 1);
 		LootTableEvents.MODIFY.register((resourceManager, lootManager, id, supplier, setter) -> {
 			if (ANCIENT_CITY_CHESTS.equals(id)) {
-				addChestLoot(supplier, ModItems.UNCLOTHED_INGOT, 0.3f);
-				addChestLoot(supplier, ModItems.RAT_MASTER_CLOTH, 0.3f);
+				addChestLoot(supplier, ModItems.CLOTHED_INGOT, 0.3f);
 				{ // rat curse book
 					ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
 					EnchantedBookItem.addEnchantment(book, new EnchantmentLevelEntry(ModEnchantments.RAT_CURSE, 1));
@@ -97,16 +83,6 @@ public class RatsMischief implements ModInitializer {
 						.with(ItemEntry.builder(Items.ENCHANTED_BOOK).apply(SetNbtLootFunction.builder(book.getNbt())).build()).build();
 					supplier.pool(lootPool);
 				}
-			} else if (BASTION_TREASURE_CHESTS.equals(id) || BASTION_OTHER_CHESTS.equals(id)
-				|| BASTION_BRIDGE_CHESTS.equals(id) || BASTION_HOGLIN_STABLE_CHESTS.equals(id)) {
-				addChestLoot(supplier, ModItems.UNCLOTHED_CONTRACTED_INGOT, 0.25f);
-				addChestLoot(supplier, ModItems.RAT_BELLICIST_CLOTH, 0.25f);
-				if (BASTION_TREASURE_CHESTS.equals(id)) {
-					addChestLoot(supplier, ModItems.RAT_BELLICIST_SMITHING_TEMPLATE, 0.10f);
-					addChestLoot(supplier, ModItems.LOYALTY_OF_THE_MISCHIEF, 0.03f);
-				}
-			} else if (END_CITY_TREASURE_CHESTS.equals(id)) {
-				addChestLoot(supplier, ModItems.LOYALTY_OF_THE_MISCHIEF, 0.05f);
 			}
 		});
 	}

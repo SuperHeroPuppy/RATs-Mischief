@@ -2,9 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    { "item": "minecraft:netherite_upgrade_smithing_template" },
-    { "item": "ratsmischief:clothed_ingot" },
-    { "item": "ratsmischief:rat_master_cloth" }
+    { "item": "minecraft:paper" },
+    { "item": "ratsmischief:clothed_ingot" }
   ],
   "result": {
     "item": "ratsmischief:rat_master_smithing_template"

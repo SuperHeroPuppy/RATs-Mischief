@@ -20,25 +20,12 @@ public final class ModItemGroup {
 			.icon(() -> icon)
 			.entries((context, entries) -> {
 				entries.add(ModItems.RAT_SPAWN_EGG);
-				addPouch(entries, (RatPouchItem) ModItems.RABBIT_HIDE_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.LEATHER_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.TWISTED_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.PURPUR_RAT_POUCH);
 				addPouch(entries, (RatPouchItem) ModItems.RAT_MASTER_POUCH);
 				entries.add(ModItems.CLOTHED_INGOT);
-				entries.add(ModBlocks.RAT_MASTER_BLOCK);
-				entries.add(ModBlocks.RAT_MASTER_BRICKS);
-				entries.add(ModBlocks.RAT_MASTER_TILES);
-				entries.add(ModBlocks.RAT_MASTER_PILLAR);
-				entries.add(ModItems.CONTRACTED_INGOT);
-				entries.add(ModItems.UNCLOTHED_INGOT);
-				entries.add(ModItems.UNCLOTHED_CONTRACTED_INGOT);
-				entries.add(ModItems.RAT_MASTER_CLOTH);
-				entries.add(ModItems.RAT_BELLICIST_CLOTH);
-				entries.add(ModItems.LOYALTY_OF_THE_MISCHIEF);
-				entries.add(ModItems.USED_LOYALTY_OF_THE_MISCHIEF);
 				entries.add(ModItems.RAT_MASTER_SMITHING_TEMPLATE);
-				entries.add(ModItems.RAT_BELLICIST_SMITHING_TEMPLATE);
 				entries.add(ModItems.RAT_MASTER_HOOD);
 				entries.add(ModItems.RAT_MASTER_CLOAK);
 				entries.add(ModItems.RAT_MASTER_BREECHES);
@@ -46,12 +33,6 @@ public final class ModItemGroup {
 				entries.add(ModItems.RAT_MASTER_MIRROR);
 				entries.add(ModItems.RAT_MASTER_OCARINA);
 				entries.add(ModItems.RAT_MASTER_MASK);
-				entries.add(ModItems.RAT_BELLICIST_HOOD);
-				entries.add(ModItems.RAT_BELLICIST_CLOAK);
-				entries.add(ModItems.RAT_BELLICIST_BREECHES);
-				entries.add(ModItems.RAT_BELLICIST_GREAVES);
-				entries.add(ModItems.RAT_BELLICIST_HORNS);
-				entries.add(ModItems.RAT_BELLICIST_CARNYX);
 			})
 			.build();
 		Registry.register(Registries.ITEM_GROUP, RatsMischief.id("items"), group);

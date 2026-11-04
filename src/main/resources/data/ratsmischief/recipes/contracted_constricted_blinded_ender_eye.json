@@ -3,13 +3,13 @@
   "category": "building",
   "ingredients": [
     {
-      "item": "ratsmischief:blinded_ender_eye_block"
+      "item": "ratsmischief:constricted_blinded_ender_eye"
     },
     {
       "item": "ratsmischief:contracted_ingot"
     }
   ],
   "result": {
-    "item": "ratsmischief:contracted_blinded_ender_eye"
+    "item": "ratsmischief:contracted_constricted_blinded_ender_eye"
   }
 }

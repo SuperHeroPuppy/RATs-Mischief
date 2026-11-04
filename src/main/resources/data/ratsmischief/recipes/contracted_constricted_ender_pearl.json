@@ -3,13 +3,13 @@
   "category": "building",
   "ingredients": [
     {
-      "item": "ratsmischief:ender_pearl_block"
+      "item": "ratsmischief:constricted_ender_pearl"
     },
     {
       "item": "ratsmischief:contracted_ingot"
     }
   ],
   "result": {
-    "item": "ratsmischief:contracted_ender_pearl"
+    "item": "ratsmischief:contracted_constricted_ender_pearl"
   }
 }

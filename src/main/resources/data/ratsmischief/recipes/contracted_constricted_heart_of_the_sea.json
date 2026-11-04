@@ -3,13 +3,13 @@
   "category": "building",
   "ingredients": [
     {
-      "item": "ratsmischief:ender_eye_block"
+      "item": "ratsmischief:constricted_heart_of_the_sea"
     },
     {
       "item": "ratsmischief:contracted_ingot"
     }
   ],
   "result": {
-    "item": "ratsmischief:contracted_ender_eye"
+    "item": "ratsmischief:contracted_constricted_heart_of_the_sea"
   }
 }

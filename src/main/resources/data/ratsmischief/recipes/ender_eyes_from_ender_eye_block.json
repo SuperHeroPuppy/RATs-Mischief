@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "ratsmischief:ender_eye_block"
+    }
+  ],
+  "result": {
+    "item": "minecraft:ender_eye",
+    "count": 9
+  }
+}

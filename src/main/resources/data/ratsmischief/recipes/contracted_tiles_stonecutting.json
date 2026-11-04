@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "ratsmischief:contracted_block"
+  },
+  "result": "ratsmischief:contracted_tiles",
+  "count": 1
+}

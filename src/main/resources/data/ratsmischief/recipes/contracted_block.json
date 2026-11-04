@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "ratsmischief:contracted_ingot"
+    }
+  },
+  "result": {
+    "item": "ratsmischief:contracted_block"
+  }
+}

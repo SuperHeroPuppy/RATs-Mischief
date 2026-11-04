@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "ratsmischief:ender_eye_block"
+    },
+    {
+      "item": "ratsmischief:contracted_ingot"
+    }
+  ],
+  "result": {
+    "item": "ratsmischief:contracted_ender_eye"
+  }
+}

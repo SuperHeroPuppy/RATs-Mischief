@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "ratsmischief:contracted_block"
+    }
+  ],
+  "result": {
+    "item": "ratsmischief:contracted_ingot",
+    "count": 9
+  }
+}

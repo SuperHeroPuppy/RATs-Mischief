@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:ender_eye"
+    }
+  },
+  "result": {
+    "item": "ratsmischief:ender_eye_block"
+  }
+}

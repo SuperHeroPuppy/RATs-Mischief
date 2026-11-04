@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "ratsmischief:block/contracted_constricted_blinded_ender_eye"
-  }
-}

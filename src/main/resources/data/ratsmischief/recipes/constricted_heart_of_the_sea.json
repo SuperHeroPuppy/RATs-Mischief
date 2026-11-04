@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "ratsmischief:heart_of_the_sea_block"
+    },
+    {
+      "item": "ratsmischief:clothed_ingot"
+    }
+  ],
+  "result": {
+    "item": "ratsmischief:constricted_heart_of_the_sea"
+  }
+}

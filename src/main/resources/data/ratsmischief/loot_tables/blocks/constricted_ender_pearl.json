@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ratsmischief:contracted_constricted_heart_of_the_sea"
+          "name": "ratsmischief:constricted_ender_pearl"
         }
       ],
       "conditions": [

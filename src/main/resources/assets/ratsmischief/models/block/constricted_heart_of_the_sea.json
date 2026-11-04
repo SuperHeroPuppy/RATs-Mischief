@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "ratsmischief:block/constricted_heart_of_the_sea"
+  }
+}

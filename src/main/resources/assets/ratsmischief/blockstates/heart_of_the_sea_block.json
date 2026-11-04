@@ -1,7 +1,16 @@
 {
   "variants": {
-    "": {
+    "axis=x": {
+      "model": "ratsmischief:block/heart_of_the_sea_block",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
       "model": "ratsmischief:block/heart_of_the_sea_block"
+    },
+    "axis=z": {
+      "model": "ratsmischief:block/heart_of_the_sea_block",
+      "x": 90
     }
   }
 }

@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ratsmischief:contracted_constricted_blinded_ender_eye"
+          "name": "ratsmischief:constricted_blinded_ender_eye"
         }
       ],
       "conditions": [

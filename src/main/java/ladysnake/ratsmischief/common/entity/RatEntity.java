@@ -350,7 +350,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 		super.readCustomDataFromNbt(tag);
 
 		if (tag.contains("RatType")) {
-			this.setRatType(Type.valueOf(tag.getString("RatType")));
+			this.setRatType(Type.byName(tag.getString("RatType"), this.getRatType()));
 		}
 		this.readAngerFromNbt(this.getWorld(), tag);
 
@@ -1097,7 +1097,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 
 		public static Type byName(String name, @Nullable Type defaultColor) {
 			for (Type type : values()) {
-				if (type.name().equals(name)) {
+				if (type.name().equalsIgnoreCase(name)) {
 					return type;
 				}
 			}

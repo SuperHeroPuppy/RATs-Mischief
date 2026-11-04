@@ -44,6 +44,7 @@ public final class ModItemGroup {
 				entries.add(ModBlocks.BLINDED_ENDER_EYE_BLOCK);
 				entries.add(ModBlocks.CONTRACTED_BLINDED_ENDER_EYE);
 				entries.add(ModBlocks.CONTRACTED_CONSTRICTED_BLINDED_ENDER_EYE);
+				entries.add(ModBlocks.HEART_OF_THE_SEA_BLOCK);
 				entries.add(ModBlocks.CONTRACTED_HEART_OF_THE_SEA);
 				entries.add(ModBlocks.CONTRACTED_CONSTRICTED_HEART_OF_THE_SEA);
 				entries.add(ModItems.UNCLOTHED_INGOT);

@@ -3,7 +3,7 @@
   "category": "building",
   "ingredients": [
     {
-      "item": "minecraft:heart_of_the_sea"
+      "item": "ratsmischief:heart_of_the_sea_block"
     },
     {
       "item": "ratsmischief:contracted_ingot"

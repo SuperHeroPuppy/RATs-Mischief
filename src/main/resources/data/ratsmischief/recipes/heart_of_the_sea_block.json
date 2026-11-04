@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PHP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:prismarine"
+    },
+    "H": {
+      "item": "minecraft:heart_of_the_sea"
+    }
+  },
+  "result": {
+    "item": "ratsmischief:heart_of_the_sea_block"
+  }
+}

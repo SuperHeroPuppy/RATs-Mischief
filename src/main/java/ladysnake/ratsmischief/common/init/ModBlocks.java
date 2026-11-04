@@ -35,6 +35,7 @@ public interface ModBlocks {
 	Block CONTRACTED_CONSTRICTED_ENDER_EYE = createBlock("contracted_constricted_ender_eye", new Block(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK).requiresTool().luminance(state -> 4)), true);
 	Block CONTRACTED_BLINDED_ENDER_EYE = createBlock("contracted_blinded_ender_eye", new Block(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK).requiresTool().luminance(state -> 4)), true);
 	Block CONTRACTED_CONSTRICTED_BLINDED_ENDER_EYE = createBlock("contracted_constricted_blinded_ender_eye", new Block(FabricBlockSettings.copyOf(Blocks.AMETHYST_BLOCK).requiresTool().luminance(state -> 4)), true);
+	Block HEART_OF_THE_SEA_BLOCK = createBlock("heart_of_the_sea_block", new Block(FabricBlockSettings.copyOf(Blocks.PRISMARINE).requiresTool()), true);
 	Block CONTRACTED_HEART_OF_THE_SEA = createBlock("contracted_heart_of_the_sea", new Block(FabricBlockSettings.copyOf(Blocks.PRISMARINE).requiresTool()), true);
 	Block CONTRACTED_CONSTRICTED_HEART_OF_THE_SEA = createBlock("contracted_constricted_heart_of_the_sea", new Block(FabricBlockSettings.copyOf(Blocks.PRISMARINE).requiresTool()), true);
 

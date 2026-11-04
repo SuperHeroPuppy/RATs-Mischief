@@ -4,6 +4,13 @@
     "ratsmischief:rat_master_block",
     "ratsmischief:rat_master_bricks",
     "ratsmischief:rat_master_tiles",
-    "ratsmischief:rat_master_pillar"
+    "ratsmischief:rat_master_pillar",
+    "ratsmischief:contracted_block",
+    "ratsmischief:contracted_bricks",
+    "ratsmischief:contracted_tiles",
+    "ratsmischief:contracted_pillar",
+    "ratsmischief:ender_pearl_block",
+    "ratsmischief:ender_eye_block",
+    "ratsmischief:blinded_ender_eye_block"
   ]
 }

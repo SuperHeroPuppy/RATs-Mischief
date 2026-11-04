@@ -52,6 +52,21 @@ public final class ModItemGroup {
 				entries.add(ModItems.RAT_BELLICIST_GREAVES);
 				entries.add(ModItems.RAT_BELLICIST_HORNS);
 				entries.add(ModItems.RAT_BELLICIST_CARNYX);
+				entries.add(ModBlocks.CONTRACTED_BLOCK);
+				entries.add(ModBlocks.CONTRACTED_BRICKS);
+				entries.add(ModBlocks.CONTRACTED_TILES);
+				entries.add(ModBlocks.CONTRACTED_PILLAR);
+				entries.add(ModBlocks.ENDER_PEARL_BLOCK);
+				entries.add(ModBlocks.ENDER_EYE_BLOCK);
+				entries.add(ModBlocks.BLINDED_ENDER_EYE_BLOCK);
+				entries.add(ModItems.CONTRACTED_ENDER_PEARL);
+				entries.add(ModItems.CONTRACTED_ENDER_EYE);
+				entries.add(ModItems.CONTRACTED_BLINDED_ENDER_EYE);
+				entries.add(ModItems.CONTRACTED_CONSTRICTED_ENDER_PEARL);
+				entries.add(ModItems.CONTRACTED_CONSTRICTED_ENDER_EYE);
+				entries.add(ModItems.CONTRACTED_CONSTRICTED_BLINDED_ENDER_EYE);
+				entries.add(ModItems.CONTRACTED_HEART_OF_THE_SEA);
+				entries.add(ModItems.CONTRACTED_CONSTRICTED_HEART_OF_THE_SEA);
 			})
 			.build();
 		Registry.register(Registries.ITEM_GROUP, RatsMischief.id("items"), group);

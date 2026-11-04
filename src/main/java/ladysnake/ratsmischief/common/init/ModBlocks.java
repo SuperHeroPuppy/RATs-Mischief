@@ -22,6 +22,13 @@ public interface ModBlocks {
 	Block RAT_MASTER_BRICKS = createBlock("rat_master_bricks", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
 	Block RAT_MASTER_TILES = createBlock("rat_master_tiles", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
 	Block RAT_MASTER_PILLAR = createBlock("rat_master_pillar", new PillarBlock(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_BLOCK = createBlock("contracted_block", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_BRICKS = createBlock("contracted_bricks", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_TILES = createBlock("contracted_tiles", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_PILLAR = createBlock("contracted_pillar", new PillarBlock(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block ENDER_PEARL_BLOCK = createBlock("ender_pearl_block", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block ENDER_EYE_BLOCK = createBlock("ender_eye_block", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block BLINDED_ENDER_EYE_BLOCK = createBlock("blinded_ender_eye_block", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
 
 	static void initialize() {
 		BLOCKS.keySet().forEach(block -> Registry.register(Registries.BLOCK, BLOCKS.get(block), block));

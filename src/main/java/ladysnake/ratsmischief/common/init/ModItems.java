@@ -70,14 +70,6 @@ public interface ModItems {
 	Item RAT_BELLICIST_GREAVES = createItem("rat_bellicist_greaves", new RatMasterArmorItem(RatMasterArmorItem.RatBellicistArmorMaterial.INSTANCE, EquipmentSlot.FEET, new FabricItemSettings()));
 	Item RAT_BELLICIST_HORNS = createItem("rat_bellicist_horns", new RatHornsItem(new FabricItemSettings().maxCount(1)));
 	Item RAT_BELLICIST_CARNYX = createItem("rat_bellicist_carnyx", new Item(new FabricItemSettings().maxCount(1)));
-	Item CONTRACTED_ENDER_PEARL = createItem("contracted_ender_pearl", new Item(new FabricItemSettings()));
-	Item CONTRACTED_ENDER_EYE = createItem("contracted_ender_eye", new Item(new FabricItemSettings()));
-	Item CONTRACTED_BLINDED_ENDER_EYE = createItem("contracted_blinded_ender_eye", new Item(new FabricItemSettings()));
-	Item CONTRACTED_CONSTRICTED_ENDER_PEARL = createItem("contracted_constricted_ender_pearl", new Item(new FabricItemSettings()));
-	Item CONTRACTED_CONSTRICTED_ENDER_EYE = createItem("contracted_constricted_ender_eye", new Item(new FabricItemSettings()));
-	Item CONTRACTED_CONSTRICTED_BLINDED_ENDER_EYE = createItem("contracted_constricted_blinded_ender_eye", new Item(new FabricItemSettings()));
-	Item CONTRACTED_HEART_OF_THE_SEA = createItem("contracted_heart_of_the_sea", new Item(new FabricItemSettings()));
-	Item CONTRACTED_CONSTRICTED_HEART_OF_THE_SEA = createItem("contracted_constricted_heart_of_the_sea", new Item(new FabricItemSettings()));
 
 	private static <T extends Item> T createItem(String name, T item) {
 		ITEMS.put(item, new Identifier(RatsMischief.MOD_ID, name));

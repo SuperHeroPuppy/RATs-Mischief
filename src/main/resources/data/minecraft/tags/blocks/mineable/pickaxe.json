@@ -11,6 +11,14 @@
     "ratsmischief:contracted_pillar",
     "ratsmischief:ender_pearl_block",
     "ratsmischief:ender_eye_block",
-    "ratsmischief:blinded_ender_eye_block"
+    "ratsmischief:blinded_ender_eye_block",
+    "ratsmischief:contracted_ender_pearl",
+    "ratsmischief:contracted_constricted_ender_pearl",
+    "ratsmischief:contracted_ender_eye",
+    "ratsmischief:contracted_constricted_ender_eye",
+    "ratsmischief:contracted_blinded_ender_eye",
+    "ratsmischief:contracted_constricted_blinded_ender_eye",
+    "ratsmischief:contracted_heart_of_the_sea",
+    "ratsmischief:contracted_constricted_heart_of_the_sea"
   ]
 }

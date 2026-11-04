@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "ratsmischief:item/contracted_ender_eye"
-  }
+  "parent": "ratsmischief:block/contracted_ender_eye"
 }

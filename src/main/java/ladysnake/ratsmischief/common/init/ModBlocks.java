@@ -29,6 +29,14 @@ public interface ModBlocks {
 	Block ENDER_PEARL_BLOCK = createBlock("ender_pearl_block", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
 	Block ENDER_EYE_BLOCK = createBlock("ender_eye_block", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
 	Block BLINDED_ENDER_EYE_BLOCK = createBlock("blinded_ender_eye_block", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_ENDER_PEARL = createBlock("contracted_ender_pearl", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_CONSTRICTED_ENDER_PEARL = createBlock("contracted_constricted_ender_pearl", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_ENDER_EYE = createBlock("contracted_ender_eye", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_CONSTRICTED_ENDER_EYE = createBlock("contracted_constricted_ender_eye", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_BLINDED_ENDER_EYE = createBlock("contracted_blinded_ender_eye", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_CONSTRICTED_BLINDED_ENDER_EYE = createBlock("contracted_constricted_blinded_ender_eye", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_HEART_OF_THE_SEA = createBlock("contracted_heart_of_the_sea", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
+	Block CONTRACTED_CONSTRICTED_HEART_OF_THE_SEA = createBlock("contracted_constricted_heart_of_the_sea", new Block(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS).requiresTool()), true);
 
 	static void initialize() {
 		BLOCKS.keySet().forEach(block -> Registry.register(Registries.BLOCK, BLOCKS.get(block), block));

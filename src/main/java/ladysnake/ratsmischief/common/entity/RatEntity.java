@@ -95,6 +95,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 	private static final RawAnimation SNIFF_ANIMATION = RawAnimation.begin().thenPlay("animation.rat.sniff");
 	public static final Predicate<ItemEntity> PICKABLE_DROP_FILTER = (itemEntity) -> !itemEntity.cannotPickup() && itemEntity.isAlive();
 	public static final List<Type> NATURAL_TYPES = ImmutableList.of(Type.ALBINO, Type.BLACK, Type.GREY, Type.HUSKY, Type.LIGHT_BROWN, Type.BLUE);
+	private static final List<Type> BIRTHDAY_TYPES = Arrays.stream(Type.values()).filter(type -> type != Type.CHERRY).toList();
 	private static final List<PartyHat> PARTY_HATS = List.of(PartyHat.values());
 	private static final TrackedData<String> TYPE = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.STRING);
 	private static final TrackedData<String> COLOR = DataTracker.registerData(RatEntity.class, TrackedDataHandlerRegistry.STRING);
@@ -156,7 +157,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 		if (RatsMischiefUtils.IS_RAT_BIRTHDAY && this.getRandom().nextInt(10) == 0) {
 			this.setRatType(Type.DOCTOR4T);
 		} else if (RatsMischiefUtils.IS_MISCHIEF_BIRTHDAY && this.getRandom().nextInt(5) == 0) {
-			this.setRatType(List.of(Type.values()).get(this.getRandom().nextInt(Type.values().length)));
+			this.setRatType(BIRTHDAY_TYPES.get(this.getRandom().nextInt(BIRTHDAY_TYPES.size())));
 		}
 
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
@@ -610,6 +611,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 				switch (this.getCustomName().getString().toLowerCase(Locale.ROOT)) {
 					case "doctor4t" -> this.setRatType(Type.DOCTOR4T);
 					case "astron", "astronyu" -> this.setRatType(Type.ASTRONYU);
+					case "cherry" -> this.setRatType(Type.CHERRY);
 
 					case "rat kid", "hat kid" -> this.setRatType(Type.RAT_KID);
 
@@ -1103,6 +1105,7 @@ public class RatEntity extends TameableEntity implements GeoEntity, Angerable {
 		LIGHT_BROWN(new Identifier(RatsMischief.MOD_ID, "textures/entity/light_brown.png")),
 		BLUE(new Identifier(RatsMischief.MOD_ID, "textures/entity/blue.png")),
 		GOLD(new Identifier(RatsMischief.MOD_ID, "textures/entity/gold.png")),
+		CHERRY(new Identifier(RatsMischief.MOD_ID, "textures/entity/cherry.png")),
 
 		RAT_KID(null),
 

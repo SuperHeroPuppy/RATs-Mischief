@@ -69,11 +69,12 @@ public class RatsMischief implements ModInitializer {
 		// rat kid painting
 		Registry.register(Registries.PAINTING_VARIANT, new Identifier(MOD_ID, "a_rat_in_time"), new PaintingVariant(64, 48));
 
-		// Rat Master ingots in Ancient Cities.
+		// Rat Master ingots and upgrade templates in Ancient Cities.
 		UniformLootNumberProvider lootTableRange = UniformLootNumberProvider.create(1, 1);
 		LootTableEvents.MODIFY.register((resourceManager, lootManager, id, supplier, setter) -> {
 			if (ANCIENT_CITY_CHESTS.equals(id)) {
 				addChestLoot(supplier, ModItems.CLOTHED_INGOT, 0.3f);
+				addChestLoot(supplier, ModItems.RAT_MASTER_SMITHING_TEMPLATE, 0.15f);
 				{ // rat curse book
 					ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
 					EnchantedBookItem.addEnchantment(book, new EnchantmentLevelEntry(ModEnchantments.RAT_CURSE, 1));
